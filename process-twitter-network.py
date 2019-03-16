@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import networkx as nx
 import pandas as pd
 import numpy as np
@@ -15,10 +15,11 @@ print('Reading edgelist')
 
 # Read combined edge-list
 twitter_edges_dir = './twitter/twitter_combined.txt'
-edges_f = open(twitter_edges_dir)
 
 # Parse edgelist into directed graph
-twitter_g = nx.read_edgelist(edges_f, nodetype=int, create_using=nx.DiGraph())
+#edges_f = open(twitter_edges_dir)
+with open(twitter_edges_dir, 'rb')as edges_f:
+    twitter_g = nx.read_edgelist(edges_f, nodetype=int, create_using=nx.DiGraph(), encoding='latin1')
 print('Num. weakly connected components: ', nx.number_weakly_connected_components(twitter_g))
 
 # print('Saving adjacency matrix')
@@ -44,8 +45,8 @@ def save_visualization(g, file_name, title):
     # Draw networkx graph -- scale node size by log(degree+1)
     nx.draw_spring(g, with_labels=False, 
                    linewidths=2.0,
-                   nodelist=degrees.keys(),
-                   node_size=[log(degree_val+1) * 100 for degree_val in degrees.values()], \
+                   nodelist=list(degrees.keys()),
+                   node_size=[log(degree_val+1) * 100 for degree_val in list(degrees.values())], \
                    node_color='r',
                    arrows=True)
     
@@ -77,7 +78,7 @@ def save_network_statistics(g):
         stats['diameter'] = None # unconnected --> infinite path length between connected components
 
     with open('./network-statistics/twitter-combined-statistics.txt', 'wb') as f:
-        for stat_name, stat_value in stats.iteritems():
+        for stat_name, stat_value in stats.items():
             f.write(stat_name + ': ' + str(stat_value) + '\n')
 
 print('Generating network visualization')

@@ -37,7 +37,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
     # NOTE: Splits are randomized and results might slightly deviate from reported numbers in the paper.
 
     if verbose == True:
-        print 'preprocessing...'
+        print('preprocessing...')
 
     # Remove diagonal elements
     adj = adj - sp.dia_matrix((adj.diagonal()[np.newaxis, :], [0]), shape=adj.shape)
@@ -63,7 +63,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
     val_edges = set()
 
     if verbose == True:
-        print 'generating test/val sets...'
+        print('generating test/val sets...')
 
     # Iterate over shuffled edges, add to train/val sets
     np.random.shuffle(edge_tuples)
@@ -94,15 +94,15 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
             break
 
     if (len(val_edges) < num_val or len(test_edges) < num_test):
-        print "WARNING: not enough removable edges to perform full train-test split!"
-        print "Num. (test, val) edges requested: (", num_test, ", ", num_val, ")"
-        print "Num. (test, val) edges returned: (", len(test_edges), ", ", len(val_edges), ")"
+        print("WARNING: not enough removable edges to perform full train-test split!")
+        print("Num. (test, val) edges requested: (", num_test, ", ", num_val, ")")
+        print("Num. (test, val) edges returned: (", len(test_edges), ", ", len(val_edges), ")")
 
     if prevent_disconnect == True:
         assert nx.number_connected_components(g) == orig_num_cc
 
     if verbose == True:
-        print 'creating false test edges...'
+        print('creating false test edges...')
 
     test_edges_false = set()
     while len(test_edges_false) < num_test:
@@ -122,7 +122,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
         test_edges_false.add(false_edge)
 
     if verbose == True:
-        print 'creating false val edges...'
+        print('creating false val edges...')
 
     val_edges_false = set()
     while len(val_edges_false) < num_val:
@@ -142,7 +142,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
         val_edges_false.add(false_edge)
 
     if verbose == True:
-        print 'creating false train edges...'
+        print('creating false train edges...')
 
     train_edges_false = set()
     while len(train_edges_false) < len(train_edges):
@@ -164,7 +164,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
         train_edges_false.add(false_edge)
 
     if verbose == True:
-        print 'final checks for disjointness...'
+        print('final checks for disjointness...')
 
     # assert: false_edges are actually false (not in all_edge_tuples)
     assert test_edges_false.isdisjoint(all_edge_tuples)
@@ -182,7 +182,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
     assert val_edges.isdisjoint(test_edges)
 
     if verbose == True:
-        print 'creating adj_train...'
+        print('creating adj_train...')
 
     # Re-build adj matrix using remaining graph
     adj_train = nx.adjacency_matrix(g)
@@ -196,8 +196,8 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
     test_edges_false = np.array([list(edge_tuple) for edge_tuple in test_edges_false])
 
     if verbose == True:
-        print 'Done with train-test split!'
-        print ''
+        print('Done with train-test split!')
+        print('')
 
     # NOTE: these edge lists only contain single direction of edge!
     return adj_train, train_edges, train_edges_false, \
@@ -210,7 +210,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
 def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05, 
     prevent_disconnect=True, verbose=False, false_edge_sampling='iterative'):
     if verbose == True:
-        print 'preprocessing...'
+        print('preprocessing...')
 
     # Remove diagonal elements
     adj = adj - sp.dia_matrix((adj.diagonal()[np.newaxis, :], [0]), shape=adj.shape)
@@ -249,7 +249,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
         node1, node2 = edge[0], edge[1]
 
         # Recalculate bridges every ____ iterations to relatively recent
-        if ind % 10000 == 0:
+        if ind % 100 == 0:
             bridge_edges = set(nx.bridges(nx.to_undirected(g))) 
 
         # Don't sample bridge edges to increase likelihood of staying connected
@@ -267,15 +267,15 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
         if len(test_edges) < num_test:
             test_edges.add(edge)
             train_edges.remove(edge)
-            if len(test_edges) % 10000 == 0 and verbose == True:
-                print 'Current num test edges: ', len(test_edges)
+            if len(test_edges) % 100 == 0 and verbose == True:
+                print('Current num test edges: ', len(test_edges))
 
         # Then, fill val_edges
         elif len(val_edges) < num_val:
             val_edges.add(edge)
             train_edges.remove(edge)
-            if len(val_edges) % 10000 == 0 and verbose == True:
-                print 'Current num val edges: ', len(val_edges)
+            if len(val_edges) % 100 == 0 and verbose == True:
+                print('Current num val edges: ', len(val_edges))
 
         # Both edge lists full --> break loop
         elif len(test_edges) == num_test and len(val_edges) == num_val:
@@ -285,19 +285,19 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
 
     # Check that enough test/val edges were found
     if (len(val_edges) < num_val or len(test_edges) < num_test):
-        print "WARNING: not enough removable edges to perform full train-test split!"
-        print "Num. (test, val) edges requested: (", num_test, ", ", num_val, ")"
-        print "Num. (test, val) edges returned: (", len(test_edges), ", ", len(val_edges), ")"
+        print("WARNING: not enough removable edges to perform full train-test split!")
+        print("Num. (test, val) edges requested: (", num_test, ", ", num_val, ")")
+        print("Num. (test, val) edges returned: (", len(test_edges), ", ", len(val_edges), ")")
 
     # Print stats for largest remaining WCC
-    print 'Num WCC: ', nx.number_weakly_connected_components(g)
+    print('Num WCC: ', nx.number_weakly_connected_components(g))
     largest_wcc_set = max(nx.weakly_connected_components(g), key=len)
     largest_wcc = g.subgraph(largest_wcc_set)
-    print 'Largest WCC num nodes: ', largest_wcc.number_of_nodes()
-    print 'Largest WCC num edges: ', largest_wcc.number_of_edges()
+    print('Largest WCC num nodes: ', largest_wcc.number_of_nodes())
+    print('Largest WCC num edges: ', largest_wcc.number_of_edges())
 
     if prevent_disconnect == True:
-        assert nx.number_weakly_connected_components(g) == orig_num_cc
+        assert nx.number_weakly_connected_components(g) == orig_num_wcc
 
     # Fraction of edges with both endpoints in largest WCC
     def frac_edges_in_wcc(edge_set):
@@ -311,12 +311,12 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
         return frac_in_wcc
 
     # Check what percentage of edges have both endpoints in largest WCC
-    print 'Fraction of train edges with both endpoints in L-WCC: ', frac_edges_in_wcc(train_edges)
-    print 'Fraction of test edges with both endpoints in L-WCC: ', frac_edges_in_wcc(test_edges)
-    print 'Fraction of val edges with both endpoints in L-WCC: ', frac_edges_in_wcc(val_edges)
+    print('Fraction of train edges with both endpoints in L-WCC: ', frac_edges_in_wcc(train_edges))
+    print('Fraction of test edges with both endpoints in L-WCC: ', frac_edges_in_wcc(test_edges))
+    print('Fraction of val edges with both endpoints in L-WCC: ', frac_edges_in_wcc(val_edges))
 
     # Ignore edges with endpoint not in largest WCC
-    print 'Removing edges with either endpoint not in L-WCC from train-test split...'
+    print('Removing edges with either endpoint not in L-WCC from train-test split...')
     train_edges = {edge for edge in train_edges if edge[0] in largest_wcc_set and edge[1] in largest_wcc_set}
     test_edges = {edge for edge in test_edges if edge[0] in largest_wcc_set and edge[1] in largest_wcc_set}
     val_edges = {edge for edge in val_edges if edge[0] in largest_wcc_set and edge[1] in largest_wcc_set}
@@ -332,7 +332,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
     # Generate candidate false edges (from g-complement) and iterate through them
     if false_edge_sampling == 'iterative':
         if verbose == True:
-            print 'preparing complement adjacency matrix...'
+            print('preparing complement adjacency matrix...')
 
         # Sample false edges from G-complement, instead of randomly generating edges
         # g_complement = nx.complement(g)
@@ -349,25 +349,25 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
         # Shuffle and iterate over false edges
         np.random.shuffle(edge_pairs_false)
         if verbose == True:
-            print 'adding candidate false edges to false edge sets...'
+            print('adding candidate false edges to false edge sets...')
         for false_edge in edge_pairs_false:
             # Fill train_edges_false first
             if len(train_edges_false) < len(train_edges):
                 train_edges_false.add(false_edge)
-                if len(train_edges_false) % 100000 == 0 and verbose == True:
-                    print 'Current num false train edges: ', len(train_edges_false)
+                if len(train_edges_false) % 1000 == 0 and verbose == True:
+                    print('Current num false train edges: ', len(train_edges_false))
 
             # Fill test_edges_false next
             elif len(test_edges_false) < len(test_edges):
                 test_edges_false.add(false_edge)
-                if len(test_edges_false) % 100000 == 0 and verbose == True:
-                    print 'Current num false test edges: ', len(test_edges_false)
+                if len(test_edges_false) % 1000 == 0 and verbose == True:
+                    print('Current num false test edges: ', len(test_edges_false))
 
             # Fill val_edges_false last
             elif len(val_edges_false) < len(val_edges):
                 val_edges_false.add(false_edge)
-                if len(val_edges_false) % 100000 == 0 and verbose == True:
-                    print 'Current num false val edges: ', len(val_edges_false)
+                if len(val_edges_false) % 1000 == 0 and verbose == True:
+                    print('Current num false val edges: ', len(val_edges_false))
 
             # All sets filled --> break
             elif len(train_edges_false) == len(train_edges) and \
@@ -378,7 +378,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
     # Randomly generate false edges (idx_i, idx_j) 1 at a time to save memory
     elif false_edge_sampling == 'random':
         if verbose == True:
-            print 'creating false test edges...'
+            print('creating false test edges...')
 
         # FALSE TEST EDGES
         while len(test_edges_false) < len(test_edges):
@@ -401,12 +401,12 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
 
             test_edges_false.add(false_edge)
 
-            if len(test_edges_false) % 100000 == 0 and verbose == True:
-                print 'Current num false test edges: ', len(test_edges_false)
+            if len(test_edges_false) % 1000 == 0 and verbose == True:
+                print('Current num false test edges: ', len(test_edges_false))
 
         # FALSE VAL EDGES
         if verbose == True:
-            print 'creating false val edges...'
+            print('creating false val edges...')
 
         while len(val_edges_false) < len(val_edges):
             idx_i = np.random.randint(0, adj.shape[0])
@@ -424,12 +424,12 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
                 
             val_edges_false.add(false_edge)
 
-            if len(val_edges_false) % 100000 == 0 and verbose == True:
-                print 'Current num false val edges: ', len(val_edges_false)
+            if len(val_edges_false) % 1000 == 0 and verbose == True:
+                print('Current num false val edges: ', len(val_edges_false))
 
         # FALSE TRAIN EDGES
         if verbose == True:
-            print 'creating false train edges...'
+            print('creating false train edges...')
 
         while len(train_edges_false) < len(train_edges):
             idx_i = np.random.randint(0, adj.shape[0])
@@ -449,13 +449,13 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
 
             train_edges_false.add(false_edge)
 
-            if len(train_edges_false) % 100000 == 0 and verbose == True:
-                print 'Current num false train edges: ', len(train_edges_false)
+            if len(train_edges_false) % 1000 == 0 and verbose == True:
+                print('Current num false train edges: ', len(train_edges_false))
 
 
     ### ---------- FINAL DISJOINTNESS CHECKS ---------- ###
     if verbose == True:
-        print 'final checks for disjointness...'
+        print('final checks for disjointness...')
 
     # assert: false_edges are actually false (not in all_edge_tuples)
     assert test_edges_false.isdisjoint(all_edge_set)
@@ -473,7 +473,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
     assert val_edges.isdisjoint(test_edges)
 
     if verbose == True:
-        print 'creating adj_train...'
+        print('creating adj_train...')
 
     # Re-build adj matrix using remaining graph
     adj_train = nx.adjacency_matrix(g)
@@ -487,11 +487,11 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
     test_edges_false = np.array([list(edge_tuple) for edge_tuple in test_edges_false])
 
     if verbose == True:
-        print 'Done with train-test split!'
-        print 'Num train edges (true, false): (', train_edges.shape[0], ', ', train_edges_false.shape[0], ')'
-        print 'Num test edges (true, false): (', test_edges.shape[0], ', ', test_edges_false.shape[0], ')'
-        print 'Num val edges (true, false): (', val_edges.shape[0], ', ', val_edges_false.shape[0], ')'
-        print ''
+        print('Done with train-test split!')
+        print('Num train edges (true, false): (', train_edges.shape[0], ', ', train_edges_false.shape[0], ')')
+        print('Num test edges (true, false): (', test_edges.shape[0], ', ', test_edges_false.shape[0], ')')
+        print('Num val edges (true, false): (', val_edges.shape[0], ', ', val_edges_false.shape[0], ')')
+        print('')
 
     # Return final edge lists (edges can go either direction!)
     return adj_train, train_edges, train_edges_false, \

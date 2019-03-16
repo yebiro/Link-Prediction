@@ -1,4 +1,4 @@
-from __future__ import division
+
 import networkx as nx
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -14,7 +14,7 @@ import os
 import tensorflow as tf
 from gae.optimizer import OptimizerAE, OptimizerVAE
 from gae.model import GCNModelAE, GCNModelVAE
-from gae.preprocessing import preprocess_graph, construct_feed_dict, sparse_to_tuple, mask_test_edges
+from gae.preprocessing import preprocess_graph, construct_feed_dict, sparse_to_tuple, mask_test_edges, mask_test_edges_directed
 import pickle
 from copy import deepcopy
 
@@ -214,14 +214,14 @@ def node2vec_scores(
 
     # Preprocessing, generate walks
     if verbose >= 1:
-        print 'Preprocessing grpah for node2vec...'
+        print('Preprocessing grpah for node2vec...')
     g_n2v = node2vec.Graph(g_train, DIRECTED, P, Q) # create node2vec graph instance
     g_n2v.preprocess_transition_probs()
     if verbose == 2:
         walks = g_n2v.simulate_walks(NUM_WALKS, WALK_LENGTH, verbose=True)
     else:
         walks = g_n2v.simulate_walks(NUM_WALKS, WALK_LENGTH, verbose=False)
-    walks = [map(str, walk) for walk in walks]
+    walks = [list(map(str, walk)) for walk in walks]
 
     # Train skip-gram model
     model = Word2Vec(walks, size=DIMENSIONS, window=WINDOW_SIZE, min_count=0, sg=1, workers=WORKERS, iter=ITER)
@@ -319,7 +319,7 @@ def node2vec_scores(
         n2v_test_roc, n2v_test_ap = get_roc_score(test_edges, test_edges_false, score_matrix, apply_sigmoid=True)
 
     else:
-        print "Invalid edge_score_mode! Either use edge-emb or dot-product."
+        print("Invalid edge_score_mode! Either use edge-emb or dot-product.")
 
     # Record scores
     n2v_scores = {}
@@ -356,7 +356,7 @@ def gae_scores(
         test_edges, test_edges_false = train_test_split # Unpack train-test split
 
     if verbose >= 1:
-        print 'GAE preprocessing...'
+        print('GAE preprocessing...')
 
     start_time = time.time()
 
@@ -406,7 +406,7 @@ def gae_scores(
     norm = adj_sparse.shape[0] * adj_sparse.shape[0] / float((adj_sparse.shape[0] * adj_sparse.shape[0] - adj_sparse.sum()) * 2)
 
     if verbose >= 1:
-        print 'Initializing GAE model...'
+        print('Initializing GAE model...')
 
     # Create VAE model
     model = GCNModelVAE(placeholders, num_features, num_nodes, features_nonzero,
@@ -436,22 +436,22 @@ def gae_scores(
         for variable in tf.trainable_variables():
             # shape is an array of tf.Dimension
             shape = variable.get_shape()
-            print "Variable shape: ", shape
+            print("Variable shape: ", shape)
             variable_parameters = 1
             for dim in shape:
-                print "Current dimension: ", dim
+                print("Current dimension: ", dim)
                 variable_parameters *= dim.value
-            print "Variable params: ", variable_parameters
+            print("Variable params: ", variable_parameters)
             total_parameters += variable_parameters
-            print ''
-        print "TOTAL TRAINABLE PARAMS: ", total_parameters
+            print('')
+        print("TOTAL TRAINABLE PARAMS: ", total_parameters)
 
-        print 'Initializing TF variables...'
+        print('Initializing TF variables...')
 
     sess.run(tf.global_variables_initializer())
 
     if verbose >= 1:
-        print 'Starting GAE training!'
+        print('Starting GAE training!')
 
     # Train model
     for epoch in range(EPOCHS):
@@ -497,10 +497,10 @@ def gae_scores(
 
         # Print results for this epoch
         if verbose == 2:
-            print("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
+            print(("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
               "train_acc=", "{:.5f}".format(avg_accuracy), "val_roc=", "{:.5f}".format(val_roc_score[-1]),
               "val_ap=", "{:.5f}".format(ap_curr),
-              "time=", "{:.5f}".format(time.time() - t))
+              "time=", "{:.5f}".format(time.time() - t)))
 
     if verbose == 2:
         print("Optimization Finished!")
@@ -616,9 +616,9 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
     try: # If found existing train-test split, use that file
         with open(train_test_split_file, 'rb') as f:
             train_test_split = pickle.load(f)
-            print 'Found existing train-test split!'
+            print('Found existing train-test split!')
     except: # Else, generate train-test split on the fly
-        print 'Generating train-test split...'
+        print('Generating train-test split...')
         if directed == False:
             train_test_split = mask_test_edges(adj_sparse, test_frac=test_frac, val_frac=val_frac)
         else:
@@ -635,16 +635,16 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
 
     # Inspect train/test split
     if verbose >= 1:
-        print "Total nodes:", adj_sparse.shape[0]
-        print "Total edges:", int(adj_sparse.nnz/2) # adj is symmetric, so nnz (num non-zero) = 2*num_edges
-        print "Training edges (positive):", len(train_edges)
-        print "Training edges (negative):", len(train_edges_false)
-        print "Validation edges (positive):", len(val_edges)
-        print "Validation edges (negative):", len(val_edges_false)
-        print "Test edges (positive):", len(test_edges)
-        print "Test edges (negative):", len(test_edges_false)
-        print ''
-        print "------------------------------------------------------"
+        print("Total nodes:", adj_sparse.shape[0])
+        print("Total edges:", int(adj_sparse.nnz/2)) # adj is symmetric, so nnz (num non-zero) = 2*num_edges
+        print("Training edges (positive):", len(train_edges))
+        print("Training edges (negative):", len(train_edges_false))
+        print("Validation edges (positive):", len(val_edges))
+        print("Validation edges (negative):", len(val_edges_false))
+        print("Test edges (positive):", len(test_edges))
+        print("Test edges (negative):", len(test_edges_false))
+        print('')
+        print("------------------------------------------------------")
 
 
     ### ---------- LINK PREDICTION BASELINES ---------- ###
@@ -652,36 +652,36 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
     aa_scores = adamic_adar_scores(g_train, train_test_split)
     lp_scores['aa'] = aa_scores
     if verbose >= 1:
-        print ''
-        print 'Adamic-Adar Test ROC score: ', str(aa_scores['test_roc'])
-        print 'Adamic-Adar Test AP score: ', str(aa_scores['test_ap'])
+        print('')
+        print('Adamic-Adar Test ROC score: ', str(aa_scores['test_roc']))
+        print('Adamic-Adar Test AP score: ', str(aa_scores['test_ap']))
 
     # Jaccard Coefficient
     jc_scores = jaccard_coefficient_scores(g_train, train_test_split)
     lp_scores['jc'] = jc_scores
     if verbose >= 1:
-        print ''
-        print 'Jaccard Coefficient Test ROC score: ', str(jc_scores['test_roc'])
-        print 'Jaccard Coefficient Test AP score: ', str(jc_scores['test_ap'])
+        print('')
+        print('Jaccard Coefficient Test ROC score: ', str(jc_scores['test_roc']))
+        print('Jaccard Coefficient Test AP score: ', str(jc_scores['test_ap']))
 
     # Preferential Attachment
     pa_scores = preferential_attachment_scores(g_train, train_test_split)
     lp_scores['pa'] = pa_scores
     if verbose >= 1:
-        print ''
-        print 'Preferential Attachment Test ROC score: ', str(pa_scores['test_roc'])
-        print 'Preferential Attachment Test AP score: ', str(pa_scores['test_ap'])
+        print('')
+        print('Preferential Attachment Test ROC score: ', str(pa_scores['test_roc']))
+        print('Preferential Attachment Test AP score: ', str(pa_scores['test_ap']))
 
 
     ### ---------- SPECTRAL CLUSTERING ---------- ###
     sc_scores = spectral_clustering_scores(train_test_split)
     lp_scores['sc'] = sc_scores
     if verbose >= 1:
-        print ''
-        print 'Spectral Clustering Validation ROC score: ', str(sc_scores['val_roc'])
-        print 'Spectral Clustering Validation AP score: ', str(sc_scores['val_ap'])
-        print 'Spectral Clustering Test ROC score: ', str(sc_scores['test_roc'])
-        print 'Spectral Clustering Test AP score: ', str(sc_scores['test_ap'])
+        print('')
+        print('Spectral Clustering Validation ROC score: ', str(sc_scores['val_roc']))
+        print('Spectral Clustering Validation AP score: ', str(sc_scores['val_ap']))
+        print('Spectral Clustering Test ROC score: ', str(sc_scores['test_roc']))
+        print('Spectral Clustering Test AP score: ', str(sc_scores['test_ap']))
 
 
     ## ---------- NODE2VEC ---------- ###
@@ -705,11 +705,11 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
     lp_scores['n2v_edge_emb'] = n2v_edge_emb_scores
 
     if verbose >= 1:
-        print ''
-        print 'node2vec (Edge Embeddings) Validation ROC score: ', str(n2v_edge_emb_scores['val_roc'])
-        print 'node2vec (Edge Embeddings) Validation AP score: ', str(n2v_edge_emb_scores['val_ap'])
-        print 'node2vec (Edge Embeddings) Test ROC score: ', str(n2v_edge_emb_scores['test_roc'])
-        print 'node2vec (Edge Embeddings) Test AP score: ', str(n2v_edge_emb_scores['test_ap'])
+        print('')
+        print('node2vec (Edge Embeddings) Validation ROC score: ', str(n2v_edge_emb_scores['val_roc']))
+        print('node2vec (Edge Embeddings) Validation AP score: ', str(n2v_edge_emb_scores['val_ap']))
+        print('node2vec (Edge Embeddings) Test ROC score: ', str(n2v_edge_emb_scores['test_roc']))
+        print('node2vec (Edge Embeddings) Test AP score: ', str(n2v_edge_emb_scores['test_ap']))
 
     # Using dot products to calculate edge scores
     n2v_dot_prod_scores = node2vec_scores(g_train, train_test_split,
@@ -719,11 +719,11 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
     lp_scores['n2v_dot_prod'] = n2v_dot_prod_scores
 
     if verbose >= 1:
-        print ''
-        print 'node2vec (Dot Product) Validation ROC score: ', str(n2v_dot_prod_scores['val_roc'])
-        print 'node2vec (Dot Product) Validation AP score: ', str(n2v_dot_prod_scores['val_ap'])
-        print 'node2vec (Dot Product) Test ROC score: ', str(n2v_dot_prod_scores['test_roc'])
-        print 'node2vec (Dot Product) Test AP score: ', str(n2v_dot_prod_scores['test_ap'])
+        print('')
+        print('node2vec (Dot Product) Validation ROC score: ', str(n2v_dot_prod_scores['val_roc']))
+        print('node2vec (Dot Product) Validation AP score: ', str(n2v_dot_prod_scores['val_ap']))
+        print('node2vec (Dot Product) Test ROC score: ', str(n2v_dot_prod_scores['test_roc']))
+        print('node2vec (Dot Product) Test AP score: ', str(n2v_dot_prod_scores['test_ap']))
 
 
     ### ---------- (VARIATIONAL) GRAPH AUTOENCODER ---------- ###

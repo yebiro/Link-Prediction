@@ -39,7 +39,7 @@ def load_features():
                 index, name = parse_featname_line(line)
                 feat_index[index] = name
             featname_file.close()
-        keys = feat_index.keys()
+        keys = list(feat_index.keys())
         keys.sort()
         out = open(feat_file_name,'w')
         for key in keys:
@@ -57,7 +57,7 @@ def load_features():
         feature_index[key] = val
     index_file.close()
 
-    for key in feature_index.keys():
+    for key in list(feature_index.keys()):
         val = feature_index[key]
         inverted_feature_index[val] = key
 
@@ -67,7 +67,7 @@ def load_nodes():
     global ego_nodes
 
     # get all the node ids by looking at the files
-    ego_nodes = [int(x.split("/")[-1].split('.')[0]) for x in glob.glob("%s/facebook/*.featnames" % (pathhack,))]
+    ego_nodes = [int(x.split("\\")[-1].split('.')[0]) for x in glob.glob("%s/facebook/*.featnames" % (pathhack,))]
     node_ids = ego_nodes
 
     # parse each node
@@ -158,29 +158,29 @@ def universal_feature(feature_index):
 
 if __name__ == '__main__':
     # print "Running tests."
-    print "Loading network..."
+    print("Loading network...")
     load_network()
-    print "done."
+    print("done.")
 
     failures = 0
     def test(actual, expected, test_name):
         global failures  #lol python scope
         try:
-            print "testing %s..." % (test_name,)
+            print("testing %s..." % (test_name,))
             assert actual == expected, "%s failed (%s != %s)!" % (test_name,actual, expected)
-            print "%s passed (%s == %s)." % (test_name,actual,expected)
+            print("%s passed (%s == %s)." % (test_name,actual,expected))
         except AssertionError as e:
-            print e
+            print(e)
             failures += 1
     
     test(network.order(), 4039, "order")
     test(network.size(), 88234, "size")
     test(round(nx.average_clustering(network),4), 0.6055, "clustering")
-    print "%d tests failed." % (failures,)
+    print("%d tests failed." % (failures,))
 
-    print ''
+    print('')
 
-    print "Saving network..."
+    print("Saving network...")
     adj = nx.adjacency_matrix(network)
     features = feature_matrix()
     network_tuple = (adj, sp.csr_matrix(features))
@@ -188,6 +188,6 @@ if __name__ == '__main__':
     with open("fb-processed/combined-adj-sparsefeat.pkl", "wb") as f:
         pickle.dump(network_tuple, f)
 
-    print "Network saved!"
+    print("Network saved!")
     
     

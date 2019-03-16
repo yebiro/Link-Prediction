@@ -4,6 +4,7 @@ import pandas as pd
 import link_prediction_scores as lp
 import pickle
 import os
+import copyreg
 
 NUM_REPEATS = 10
 RANDOM_SEED = 0
@@ -41,7 +42,7 @@ nx_graphs['er-small'] = nx.erdos_renyi_graph(n=N_SMALL, p=.02, seed=RANDOM_SEED)
 nx_graphs['ws-small'] = nx.watts_strogatz_graph(n=N_SMALL, k=5, p=.1, seed=RANDOM_SEED) # Watts-Strogatz
 nx_graphs['ba-small'] = nx.barabasi_albert_graph(n=N_SMALL, m=2, seed=RANDOM_SEED) # Barabasi-Albert
 nx_graphs['pc-small'] = nx.powerlaw_cluster_graph(n=N_SMALL, m=2, p=.02, seed=RANDOM_SEED) # Powerlaw Cluster
-nx_graphs['sbm-small'] = nx.random_partition_graph(sizes=[N_SMALL/10]*10, p_in=.1, p_out=.01, seed=RANDOM_SEED) # Stochastic Block Model
+nx_graphs['sbm-small'] = nx.random_partition_graph(sizes=[N_SMALL//10]*10, p_in=.1, p_out=.01, seed=RANDOM_SEED) # Stochastic Block Model
 
 # Larger graphs
 N_LARGE = 1000
@@ -49,12 +50,12 @@ nx_graphs['er-large'] = nx.erdos_renyi_graph(n=N_LARGE, p=.01, seed=RANDOM_SEED)
 nx_graphs['ws-large'] = nx.watts_strogatz_graph(n=N_LARGE, k=3, p=.1, seed=RANDOM_SEED) # Watts-Strogatz
 nx_graphs['ba-large'] = nx.barabasi_albert_graph(n=N_LARGE, m=2, seed=RANDOM_SEED) # Barabasi-Albert
 nx_graphs['pc-large'] = nx.powerlaw_cluster_graph(n=N_LARGE, m=2, p=.02, seed=RANDOM_SEED) # Powerlaw Cluster
-nx_graphs['sbm-large'] = nx.random_partition_graph(sizes=[N_LARGE/10]*10, p_in=.05, p_out=.005, seed=RANDOM_SEED) # Stochastic Block Model
+nx_graphs['sbm-large'] = nx.random_partition_graph(sizes=[N_LARGE//10]*10, p_in=.05, p_out=.005, seed=RANDOM_SEED) # Stochastic Block Model
 
 # Remove isolates from random graphs
-for g_name, nx_g in nx_graphs.iteritems():
+for g_name, nx_g in nx_graphs.items():
     isolates = nx.isolates(nx_g)
-    if len(isolates) > 0:
+    if len(list(isolates)) > 0:
         for isolate_node in isolates:
             nx_graphs[g_name].remove_node(isolate_node)
 
@@ -83,12 +84,12 @@ for i in range(NUM_REPEATS):
         test_frac = frac_hidden - val_frac
         
         # Iterate over each graph
-        for g_name, graph_tuple in fb_graphs.iteritems():
+        for g_name, graph_tuple in fb_graphs.items():
             adj = graph_tuple[0]
             feat = graph_tuple[1]
             
             experiment_name = 'fb-{}-{}-hidden'.format(g_name, frac_hidden)
-            print "Current experiment: ", experiment_name
+            print("Current experiment: ", experiment_name)
 
             # # TODO: remove this!
             # if experiment_name !='fb-combined-0.25-hidden' and \
@@ -133,11 +134,11 @@ for i in range(NUM_REPEATS):
         test_frac = frac_hidden - val_frac
         
         # Iterate over each graph
-        for g_name, nx_g in nx_graphs.iteritems():
+        for g_name, nx_g in nx_graphs.items():
             adj = nx.adjacency_matrix(nx_g)
             
             experiment_name = 'nx-{}-{}-hidden'.format(g_name, frac_hidden)
-            print "Current experiment: ", experiment_name
+            print("Current experiment: ", experiment_name)
             
             # Run all link prediction methods on current graph, store results
             nx_results[experiment_name] = lp.calculate_all_scores(adj, \

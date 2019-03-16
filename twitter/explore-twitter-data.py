@@ -22,10 +22,10 @@ for edgelist_file in edgelists:
 	edges_f = open(DATA_DIR+edgelist_file, 'rb')
 	g = nx.read_edgelist(edges_f, nodetype=int, create_using=nx.DiGraph())
 
-	print 'Current file: ', edgelist_file
-	print 'Number of nodes: ', g.number_of_nodes()
-	print 'Number of edges: ', g.number_of_edges()
-	print ''
+	print('Current file: ', edgelist_file)
+	print('Number of nodes: ', g.number_of_nodes())
+	print('Number of edges: ', g.number_of_edges())
+	print('')
 
 	out_f.write('Current file: ' + edgelist_file + '\n')
 	out_f.write('Number of nodes: ' + str(g.number_of_nodes()) + '\n')
@@ -42,8 +42,8 @@ for edgelist_file in edgelists:
 		max_edges = g.number_of_edges()
 
 # Print final results
-print 'Most nodes: ', max_nodes_file, ' (', max_nodes, ') nodes'
-print 'Most edges: ', max_edges_file, ' (', max_edges, ') edges'
+print('Most nodes: ', max_nodes_file, ' (', max_nodes, ') nodes')
+print('Most edges: ', max_edges_file, ' (', max_edges, ') edges')
 
 out_f.write('Most nodes: ' + max_nodes_file + ' (' + str(max_nodes) + ') nodes' + '\n')
 out_f.write('Most edges: ' + max_edges_file + ' (' + str(max_edges) + ') edges' + '\n')

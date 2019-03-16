@@ -12,8 +12,10 @@ for ego_user in FB_EGO_USERS:
     feats_dir = './facebook/' + str(ego_user) + '.allfeat'
     
     # Read edge-list
-    f = open(edges_dir)
-    g = nx.read_edgelist(f, nodetype=int)
+    #f = open(edges_dir)
+    with open(edges_dir, 'rb')as f:
+        g = nx.read_edgelist(f, nodetype=int, encoding='latin1')
+
 
     # Add ego user (directly connected to all other nodes)
     g.add_node(ego_user)

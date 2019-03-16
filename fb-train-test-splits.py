@@ -39,14 +39,14 @@ for frac_hidden in FRAC_EDGES_HIDDEN:
     test_frac = frac_hidden - val_frac
     
     # Iterate over each graph
-    for g_name, graph_tuple in fb_graphs.iteritems():
+    for g_name, graph_tuple in fb_graphs.items():
         adj = graph_tuple[0]
         feat = graph_tuple[1]
         
         current_graph = 'fb-{}-{}-hidden'.format(g_name, frac_hidden)
         
         # if current_graph in TODO:
-        print "Current graph: ", current_graph
+        print("Current graph: ", current_graph)
 
         np.random.seed(RANDOM_SEED)
         

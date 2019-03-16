@@ -41,7 +41,7 @@ for i in range(NUM_REPEATS):
 
         # Read train-test split
         experiment_name = 'twitter-combined-{}-hidden'.format(frac_hidden)
-        print "Current experiment: ", experiment_name
+        print("Current experiment: ", experiment_name)
         train_test_split_file = TRAIN_TEST_SPLITS_FOLDER + experiment_name + '.pkl'
 
         # Run all link prediction methods on current graph, store results

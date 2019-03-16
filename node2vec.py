@@ -44,10 +44,10 @@ class Graph():
 		walks = []
 		nodes = list(G.nodes())
 		if verbose == True:
-			print 'Walk iteration:'
+			print('Walk iteration:')
 		for walk_iter in range(num_walks):
 			if verbose == True:
-				print str(walk_iter+1), '/', str(num_walks)
+				print(str(walk_iter+1), '/', str(num_walks))
 			random.shuffle(nodes)
 			for node in nodes:
 				walks.append(self.node2vec_walk(walk_length=walk_length, start_node=node))
