@@ -19,7 +19,10 @@ import pickle
 from copy import deepcopy
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    if x>=0:
+        return 1 / (1 + np.exp(-x))
+    else:
+        return 1 / (1 + np.exp(x))
 
 # Input: positive test/val edges, negative test/val edges, edge score matrix
 # Output: ROC AUC score, ROC Curve (FPR, TPR, Thresholds), AP score
@@ -344,7 +347,7 @@ def gae_scores(
     train_test_split,
     features_matrix=None,
     LEARNING_RATE = 0.01,
-    EPOCHS = 200,
+    EPOCHS = 250,
     HIDDEN1_DIM = 32,
     HIDDEN2_DIM = 16,
     DROPOUT = 0,
@@ -391,9 +394,9 @@ def gae_scores(
 
     # Define placeholders
     placeholders = { # TODO: try making these dense from the get-go
-        'features': tf.sparse_placeholder(tf.float16),
-        'adj': tf.sparse_placeholder(tf.float16),
-        'adj_orig': tf.sparse_placeholder(tf.float16),
+        'features': tf.sparse_placeholder(tf.float32),
+        'adj': tf.sparse_placeholder(tf.float32),
+        'adj_orig': tf.sparse_placeholder(tf.float32),
         'dropout': tf.placeholder_with_default(0., shape=())
     }
 
@@ -419,7 +422,7 @@ def gae_scores(
                                pos_weight=pos_weight,
                                norm=norm,
                                learning_rate=LEARNING_RATE,
-                               dtype=tf.float16)
+                               dtype=tf.float32)
 
     cost_val = []
     acc_val = []
@@ -727,28 +730,28 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
 
 
     ### ---------- (VARIATIONAL) GRAPH AUTOENCODER ---------- ###
-    # # GAE hyperparameters
-    # LEARNING_RATE = 0.001 # Default: 0.01
-    # EPOCHS = 200
-    # HIDDEN1_DIM = 32
-    # HIDDEN2_DIM = 16
-    # DROPOUT = 0
+    # GAE hyperparameters
+    LEARNING_RATE = 0.01 # Default: 0.01
+    EPOCHS = 200
+    HIDDEN1_DIM = 32
+    HIDDEN2_DIM = 16
+    DROPOUT = 0
 
-    # # Use dot product
-    # tf.set_random_seed(random_state) # Consistent GAE training
-    # gae_results = gae_scores(adj_sparse, train_test_split, features_matrix,
-    #     LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
-    #     "dot-product",
-    #     verbose,
-    #     dtype=tf.float16)
-    # lp_scores['gae'] = gae_results
+    # Use dot product
+    tf.set_random_seed(random_state) # Consistent GAE training
+    gae_results = gae_scores(adj_sparse, train_test_split, features_matrix,
+        LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
+        "dot-product",
+        verbose,
+        dtype=tf.float32)
+    lp_scores['gae'] = gae_results
 
-    # if verbose >= 1:
-    #     print ''
-    #     print 'GAE (Dot Product) Validation ROC score: ', str(gae_results['val_roc'])
-    #     print 'GAE (Dot Product) Validation AP score: ', str(gae_results['val_ap'])
-    #     print 'GAE (Dot Product) Test ROC score: ', str(gae_results['test_roc'])
-    #     print 'GAE (Dot Product) Test AP score: ', str(gae_results['test_ap'])
+    if verbose >= 1:
+        print('')
+        print('GAE (Dot Product) Validation ROC score: ', str(gae_results['val_roc']))
+        print('GAE (Dot Product) Validation AP score: ', str(gae_results['val_ap']))
+        print('GAE (Dot Product) Test ROC score: ', str(gae_results['test_roc']))
+        print('GAE (Dot Product) Test AP score: ', str(gae_results['test_ap']))
 
 
     # # Use edge embeddings
@@ -758,13 +761,13 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
     #     "edge-emb",
     #     verbose)
     # lp_scores['gae_edge_emb'] = gae_edge_emb_results
-
+    #
     # if verbose >= 1:
-    #     print ''
-    #     print 'GAE (Edge Embeddings) Validation ROC score: ', str(gae_edge_emb_results['val_roc'])
-    #     print 'GAE (Edge Embeddings) Validation AP score: ', str(gae_edge_emb_results['val_ap'])
-    #     print 'GAE (Edge Embeddings) Test ROC score: ', str(gae_edge_emb_results['test_roc'])
-    #     print 'GAE (Edge Embeddings) Test AP score: ', str(gae_edge_emb_results['test_ap'])
+    #     print('')
+    #     print('GAE (Edge Embeddings) Validation ROC score: ', str(gae_edge_emb_results['val_roc']))
+    #     print('GAE (Edge Embeddings) Validation AP score: ', str(gae_edge_emb_results['val_ap']))
+    #     print('GAE (Edge Embeddings) Test ROC score: ', str(gae_edge_emb_results['test_roc']))
+    #     print('GAE (Edge Embeddings) Test AP score: ', str(gae_edge_emb_results['test_ap']))
 
 
     ### ---------- RETURN RESULTS ---------- ###

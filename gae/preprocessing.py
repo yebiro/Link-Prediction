@@ -67,6 +67,7 @@ def mask_test_edges(adj, test_frac=.1, val_frac=.05, prevent_disconnect=True, ve
 
     # Iterate over shuffled edges, add to train/val sets
     np.random.shuffle(edge_tuples)
+
     for edge in edge_tuples:
         # print edge
         node1 = edge[0]
@@ -249,7 +250,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
         node1, node2 = edge[0], edge[1]
 
         # Recalculate bridges every ____ iterations to relatively recent
-        if ind % 100 == 0:
+        if ind % 1000 == 0:
             bridge_edges = set(nx.bridges(nx.to_undirected(g))) 
 
         # Don't sample bridge edges to increase likelihood of staying connected
@@ -267,14 +268,14 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
         if len(test_edges) < num_test:
             test_edges.add(edge)
             train_edges.remove(edge)
-            if len(test_edges) % 100 == 0 and verbose == True:
+            if len(test_edges) % 1000 == 0 and verbose == True:
                 print('Current num test edges: ', len(test_edges))
 
         # Then, fill val_edges
         elif len(val_edges) < num_val:
             val_edges.add(edge)
             train_edges.remove(edge)
-            if len(val_edges) % 100 == 0 and verbose == True:
+            if len(val_edges) % 1000 == 0 and verbose == True:
                 print('Current num val edges: ', len(val_edges))
 
         # Both edge lists full --> break loop
@@ -354,19 +355,19 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
             # Fill train_edges_false first
             if len(train_edges_false) < len(train_edges):
                 train_edges_false.add(false_edge)
-                if len(train_edges_false) % 1000 == 0 and verbose == True:
+                if len(train_edges_false) % 10000 == 0 and verbose == True:
                     print('Current num false train edges: ', len(train_edges_false))
 
             # Fill test_edges_false next
             elif len(test_edges_false) < len(test_edges):
                 test_edges_false.add(false_edge)
-                if len(test_edges_false) % 1000 == 0 and verbose == True:
+                if len(test_edges_false) % 10000 == 0 and verbose == True:
                     print('Current num false test edges: ', len(test_edges_false))
 
             # Fill val_edges_false last
             elif len(val_edges_false) < len(val_edges):
                 val_edges_false.add(false_edge)
-                if len(val_edges_false) % 1000 == 0 and verbose == True:
+                if len(val_edges_false) % 10000 == 0 and verbose == True:
                     print('Current num false val edges: ', len(val_edges_false))
 
             # All sets filled --> break
@@ -401,7 +402,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
 
             test_edges_false.add(false_edge)
 
-            if len(test_edges_false) % 1000 == 0 and verbose == True:
+            if len(test_edges_false) % 10000 == 0 and verbose == True:
                 print('Current num false test edges: ', len(test_edges_false))
 
         # FALSE VAL EDGES
@@ -424,7 +425,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
                 
             val_edges_false.add(false_edge)
 
-            if len(val_edges_false) % 1000 == 0 and verbose == True:
+            if len(val_edges_false) % 10000 == 0 and verbose == True:
                 print('Current num false val edges: ', len(val_edges_false))
 
         # FALSE TRAIN EDGES
@@ -449,7 +450,7 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
 
             train_edges_false.add(false_edge)
 
-            if len(train_edges_false) % 1000 == 0 and verbose == True:
+            if len(train_edges_false) % 10000 == 0 and verbose == True:
                 print('Current num false train edges: ', len(train_edges_false))
 
 
