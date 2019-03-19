@@ -24,6 +24,8 @@ def sigmoid(x):
     else:
         return 1 / (1 + np.exp(x))
 
+
+
 # Input: positive test/val edges, negative test/val edges, edge score matrix
 # Output: ROC AUC score, ROC Curve (FPR, TPR, Thresholds), AP score
 def get_roc_score(edges_pos, edges_neg, score_matrix, apply_sigmoid=False):
@@ -280,7 +282,7 @@ def node2vec_scores(
         test_edge_labels = np.concatenate([np.ones(len(test_edges)), np.zeros(len(test_edges_false))])
 
         # Train logistic regression classifier on train-set edge embeddings
-        edge_classifier = LogisticRegression(random_state=0)
+        edge_classifier = LogisticRegression(random_state=0, solver='liblinear')
         edge_classifier.fit(train_edge_embs, train_edge_labels)
 
         # Predicted edge scores: probability of being of class "1" (real edge)
@@ -499,11 +501,11 @@ def gae_scores(
         val_roc_score.append(roc_curr)
 
         # Print results for this epoch
-        if verbose == 2:
-            print(("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
-              "train_acc=", "{:.5f}".format(avg_accuracy), "val_roc=", "{:.5f}".format(val_roc_score[-1]),
-              "val_ap=", "{:.5f}".format(ap_curr),
-              "time=", "{:.5f}".format(time.time() - t)))
+        # if verbose == 2:
+        #     print(("Epoch:", '%04d' % (epoch + 1), "train_loss=", "{:.5f}".format(avg_cost),
+        #       "train_acc=", "{:.5f}".format(avg_accuracy), "val_roc=", "{:.5f}".format(val_roc_score[-1]),
+        #       "val_ap=", "{:.5f}".format(ap_curr),
+        #       "time=", "{:.5f}".format(time.time() - t)))
 
     if verbose == 2:
         print("Optimization Finished!")
@@ -560,7 +562,7 @@ def gae_scores(
         test_edge_labels = np.concatenate([np.ones(len(test_edges)), np.zeros(len(test_edges_false))])
 
         # Train logistic regression classifier on train-set edge embeddings
-        edge_classifier = LogisticRegression(random_state=0)
+        edge_classifier = LogisticRegression(random_state=0, solver='liblinear')
         edge_classifier.fit(train_edge_embs, train_edge_labels)
 
         # Predicted edge scores: probability of being of class "1" (real edge)
@@ -685,7 +687,7 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
         print('Spectral Clustering Validation AP score: ', str(sc_scores['val_ap']))
         print('Spectral Clustering Test ROC score: ', str(sc_scores['test_roc']))
         print('Spectral Clustering Test AP score: ', str(sc_scores['test_ap']))
-
+        print('')
 
     ## ---------- NODE2VEC ---------- ###
     # node2vec settings
@@ -713,6 +715,7 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
         print('node2vec (Edge Embeddings) Validation AP score: ', str(n2v_edge_emb_scores['val_ap']))
         print('node2vec (Edge Embeddings) Test ROC score: ', str(n2v_edge_emb_scores['test_roc']))
         print('node2vec (Edge Embeddings) Test AP score: ', str(n2v_edge_emb_scores['test_ap']))
+        print('')
 
     # Using dot products to calculate edge scores
     n2v_dot_prod_scores = node2vec_scores(g_train, train_test_split,
@@ -727,31 +730,35 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
         print('node2vec (Dot Product) Validation AP score: ', str(n2v_dot_prod_scores['val_ap']))
         print('node2vec (Dot Product) Test ROC score: ', str(n2v_dot_prod_scores['test_roc']))
         print('node2vec (Dot Product) Test AP score: ', str(n2v_dot_prod_scores['test_ap']))
-
-
-    ### ---------- (VARIATIONAL) GRAPH AUTOENCODER ---------- ###
-    # GAE hyperparameters
-    LEARNING_RATE = 0.01 # Default: 0.01
-    EPOCHS = 200
-    HIDDEN1_DIM = 32
-    HIDDEN2_DIM = 16
-    DROPOUT = 0
-
-    # Use dot product
-    tf.set_random_seed(random_state) # Consistent GAE training
-    gae_results = gae_scores(adj_sparse, train_test_split, features_matrix,
-        LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
-        "dot-product",
-        verbose,
-        dtype=tf.float32)
-    lp_scores['gae'] = gae_results
-
-    if verbose >= 1:
         print('')
-        print('GAE (Dot Product) Validation ROC score: ', str(gae_results['val_roc']))
-        print('GAE (Dot Product) Validation AP score: ', str(gae_results['val_ap']))
-        print('GAE (Dot Product) Test ROC score: ', str(gae_results['test_roc']))
-        print('GAE (Dot Product) Test AP score: ', str(gae_results['test_ap']))
+
+    if test_frac <0.4:
+        ### ---------- (VARIATIONAL) GRAPH AUTOENCODER ---------- ###
+        # GAE hyperparameters
+        LEARNING_RATE = 0.01  # Default: 0.01
+        EPOCHS = 200
+        HIDDEN1_DIM = 32
+        HIDDEN2_DIM = 16
+        DROPOUT = 0
+
+        # Use dot product
+        tf.set_random_seed(random_state)  # Consistent GAE training
+        gae_results = gae_scores(adj_sparse, train_test_split, features_matrix,
+                                 LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
+                                 "dot-product",
+                                 verbose,
+                                 dtype=tf.float32)
+        lp_scores['gae'] = gae_results
+
+        if verbose >= 1:
+            print('')
+            print('GAE (Dot Product) Validation ROC score: ', str(gae_results['val_roc']))
+            print('GAE (Dot Product) Validation AP score: ', str(gae_results['val_ap']))
+            print('GAE (Dot Product) Test ROC score: ', str(gae_results['test_roc']))
+            print('GAE (Dot Product) Test AP score: ', str(gae_results['test_ap']))
+            print("------------------------------------------------------")
+            print("------------------------------------------------------")
+            print('')
 
 
     # # Use edge embeddings

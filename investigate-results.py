@@ -416,7 +416,7 @@ def save_alg_results_bar_graph(lp_algorithm, frac_hidden, metric='test_roc', gra
 
 # Generate AUROC graphs for each algorithm, frac_hidden
 ALGORITHMS_TO_PLOT = alg_abbr_to_name.keys()
-FRACS_HIDDEN = [0.25, 0.5, 0.75]
+FRACS_HIDDEN = [0.15, 0.3, 0.45]
 for alg in ALGORITHMS_TO_PLOT:
     for frac_hidden in FRACS_HIDDEN:
         save_alg_results_bar_graph(alg, frac_hidden,

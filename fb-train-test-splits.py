@@ -28,14 +28,14 @@ with open(combined_dir, 'rb') as f:
 
 
 ### ---------- Generate Train-Test Splits ---------- ###
-FRAC_EDGES_HIDDEN = [0.25, 0.5, 0.75]
+FRAC_EDGES_HIDDEN = [0.15, 0.3, 0.45]
 TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'
 
 # TODO = ['fb-combined-0.75-hidden']
 
 # Iterate over fractions of edges to hide
 for frac_hidden in FRAC_EDGES_HIDDEN:
-    val_frac = 0.1
+    val_frac = 0.05
     test_frac = frac_hidden - val_frac
     
     # Iterate over each graph

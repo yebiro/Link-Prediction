@@ -7,9 +7,9 @@ import os
 import tensorflow as tf
 
 # Runtime parameters
-NUM_REPEATS = 3
+NUM_REPEATS = 1
 RANDOM_SEED = 0
-FRAC_EDGES_HIDDEN = [0.25, 0.5, 0.75]
+FRAC_EDGES_HIDDEN = [0.15, 0.3]
 
 # Read in twitter network
 TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'
@@ -36,7 +36,7 @@ for i in range(NUM_REPEATS):
 
     # Iterate over fractions of edges to hide
     for frac_hidden in FRAC_EDGES_HIDDEN:
-        val_frac = 0.1
+        val_frac = 0.05
         test_frac = frac_hidden - val_frac
 
         # Read train-test split

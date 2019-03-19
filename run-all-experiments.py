@@ -6,9 +6,9 @@ import pickle
 import os
 import json
 
-NUM_REPEATS = 10
+NUM_REPEATS = 1
 RANDOM_SEED = 0
-FRAC_EDGES_HIDDEN = [0.25, 0.5, 0.75]
+FRAC_EDGES_HIDDEN = [0.15,0.3,0.45]
 
 ### ---------- Load in FB Graphs ---------- ###
 FB_EGO_USERS = [0, 107, 1684, 1912, 3437, 348, 3980, 414, 686, 698]
@@ -62,125 +62,125 @@ for g_name, nx_g in nx_graphs.items():
 
 
 ### ---------- Run Link Prediction Tests ---------- ###
-#for i in range(NUM_REPEATS):
+for i in range(NUM_REPEATS):
 
-## ---------- FACEBOOK ---------- ###
-fb_results = {}
+    ## ---------- FACEBOOK ---------- ###
+    fb_results = {}
 
-# Check existing experiment results, increment file number by 1
-past_results = os.listdir('./results/')
-experiment_num = 0
-experiment_file_name = 'fb-experiment-{}-results.pkl'.format(experiment_num)
-while (experiment_file_name in past_results):
-    experiment_num += 1
+    # Check existing experiment results, increment file number by 1
+    past_results = os.listdir('./results/')
+    experiment_num = 0
     experiment_file_name = 'fb-experiment-{}-results.pkl'.format(experiment_num)
+    while (experiment_file_name in past_results):
+        experiment_num += 1
+        experiment_file_name = 'fb-experiment-{}-results.pkl'.format(experiment_num)
 
-FB_RESULTS_DIR = './results/' + experiment_file_name
+    FB_RESULTS_DIR = './results/' + experiment_file_name
 
-#save as txt format
-txt_experiment_num = 0
-txt_experiment_file_name = 'txt-fb-experiment-{}-results.txt'.format(txt_experiment_num)
-while (txt_experiment_file_name in past_results):
-    txt_experiment_num += 1
+    #save as txt format
+    txt_experiment_num = 0
     txt_experiment_file_name = 'txt-fb-experiment-{}-results.txt'.format(txt_experiment_num)
+    while (txt_experiment_file_name in past_results):
+        txt_experiment_num += 1
+        txt_experiment_file_name = 'txt-fb-experiment-{}-results.txt'.format(txt_experiment_num)
 
-TXT_FB_RESULTS_DIR = './results/txt/' + txt_experiment_file_name
+    TXT_FB_RESULTS_DIR = './results/txt/' + txt_experiment_file_name
 
-TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'
+    TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'
 
-# Iterate over fractions of edges to hide
-for frac_hidden in FRAC_EDGES_HIDDEN:
-    val_frac = 0.1
-    test_frac = frac_hidden - val_frac
+    # Iterate over fractions of edges to hide
+    for frac_hidden in FRAC_EDGES_HIDDEN:
+        val_frac = 0.05
+        test_frac = frac_hidden - val_frac
 
-    # Iterate over each graph
-    for g_name, graph_tuple in fb_graphs.items():
-        adj = graph_tuple[0]
-        feat = graph_tuple[1]
+        # Iterate over each graph
+        for g_name, graph_tuple in fb_graphs.items():
+            adj = graph_tuple[0]
+            feat = graph_tuple[1]
 
-        experiment_name = 'fb-{}-{}-hidden'.format(g_name, frac_hidden)
-        print("Current experiment: ", experiment_name)
+            experiment_name = 'fb-{}-{}-hidden'.format(g_name, frac_hidden)
+            print("Current experiment: ", experiment_name)
 
-        # # TODO: remove this!
-        # if experiment_name !='fb-combined-0.25-hidden' and \
-        #     experiment_name != 'fb-combined-0.5-hidden' and \
-        #     experiment_name != 'fb-combined-0.75-hidden':
-        #     continue
+            # # TODO: remove this!
+            # if experiment_name !='fb-combined-0.25-hidden' and \
+            #     experiment_name != 'fb-combined-0.5-hidden' and \
+            #     experiment_name != 'fb-combined-0.75-hidden':
+            #     continue
 
-        train_test_split_file = TRAIN_TEST_SPLITS_FOLDER + experiment_name + '.pkl'
+            train_test_split_file = TRAIN_TEST_SPLITS_FOLDER + experiment_name + '.pkl'
 
-        # Run all link prediction methods on current graph, store results
-        fb_results[experiment_name] = lp.calculate_all_scores(adj, feat, \
-                                                     test_frac=test_frac, val_frac=val_frac, \
-                                                     random_state=RANDOM_SEED, verbose=2,
-                                                     train_test_split_file=train_test_split_file)
+            # Run all link prediction methods on current graph, store results
+            fb_results[experiment_name] = lp.calculate_all_scores(adj, feat, \
+                                                         test_frac=test_frac, val_frac=val_frac, \
+                                                         random_state=RANDOM_SEED, verbose=2,
+                                                         train_test_split_file=train_test_split_file)
 
-        # Save experiment results at each iteration
-        with open(FB_RESULTS_DIR, 'wb') as f:
-            pickle.dump(fb_results, f, protocol=2)
+            # Save experiment results at each iteration
+            with open(FB_RESULTS_DIR, 'wb') as f:
+                pickle.dump(fb_results, f, protocol=2)
 
-        with open(TXT_FB_RESULTS_DIR, 'w+') as f:
-            f.write(json.dumps(fb_results))
-
-
-# Save final experiment results
-with open(FB_RESULTS_DIR, 'wb') as f:
-    pickle.dump(fb_results, f, protocol=2)
-
-with open(TXT_FB_RESULTS_DIR, 'w+') as f:
-    f.write(json.dumps(fb_results))
+            with open(TXT_FB_RESULTS_DIR, 'w+') as f:
+                f.write(json.dumps(fb_results))
 
 
+    # Save final experiment results
+    with open(FB_RESULTS_DIR, 'wb') as f:
+        pickle.dump(fb_results, f, protocol=2)
 
-### ---------- NETWORKX ---------- ###
-nx_results = {}
+    with open(TXT_FB_RESULTS_DIR, 'w+') as f:
+        f.write(json.dumps(fb_results))
 
-# Check existing experiment results, increment file number by 1
-past_results = os.listdir('./results/')
-experiment_num = 0
-experiment_file_name = 'nx-experiment-{}-results.pkl'.format(experiment_num)
-while (experiment_file_name in past_results):
-    experiment_num += 1
+
+
+    ### ---------- NETWORKX ---------- ###
+    nx_results = {}
+
+    # Check existing experiment results, increment file number by 1
+    past_results = os.listdir('./results/')
+    experiment_num = 0
     experiment_file_name = 'nx-experiment-{}-results.pkl'.format(experiment_num)
+    while (experiment_file_name in past_results):
+        experiment_num += 1
+        experiment_file_name = 'nx-experiment-{}-results.pkl'.format(experiment_num)
 
-NX_RESULTS_DIR = './results/' + experiment_file_name
+    NX_RESULTS_DIR = './results/' + experiment_file_name
 
-# save as txt format
-txt_experiment_num = 0
-txt_experiment_file_name = 'txt-nx-experiment-{}-results.txt'.format(txt_experiment_num)
-while (txt_experiment_file_name in past_results):
-    txt_experiment_num += 1
+    # save as txt format
+    txt_experiment_num = 0
     txt_experiment_file_name = 'txt-nx-experiment-{}-results.txt'.format(txt_experiment_num)
+    while (txt_experiment_file_name in past_results):
+        txt_experiment_num += 1
+        txt_experiment_file_name = 'txt-nx-experiment-{}-results.txt'.format(txt_experiment_num)
 
-TXT_NX_RESULTS_DIR = './results/txt/' + txt_experiment_file_name
+    TXT_NX_RESULTS_DIR = './results/txt/' + txt_experiment_file_name
 
-# Iterate over fractions of edges to hide
-for frac_hidden in FRAC_EDGES_HIDDEN:
-    val_frac = 0.1
-    test_frac = frac_hidden - val_frac
+    # Iterate over fractions of edges to hide
+    for frac_hidden in FRAC_EDGES_HIDDEN:
+        val_frac = 0.05
+        test_frac = frac_hidden - val_frac
 
-    # Iterate over each graph
-    for g_name, nx_g in nx_graphs.items():
-        adj = nx.adjacency_matrix(nx_g)
+        # Iterate over each graph
+        for g_name, nx_g in nx_graphs.items():
+            adj = nx.adjacency_matrix(nx_g)
 
-        experiment_name = 'nx-{}-{}-hidden'.format(g_name, frac_hidden)
-        print("Current experiment: ", experiment_name)
+            experiment_name = 'nx-{}-{}-hidden'.format(g_name, frac_hidden)
+            print("Current experiment: ", experiment_name)
 
-        # Run all link prediction methods on current graph, store results
-        nx_results[experiment_name] = lp.calculate_all_scores(adj, \
-                                                     test_frac=test_frac, val_frac=val_frac, \
-                                                     random_state=RANDOM_SEED, verbose=0)
+            # Run all link prediction methods on current graph, store results
+            nx_results[experiment_name] = lp.calculate_all_scores(adj, \
+                                                         test_frac=test_frac, val_frac=val_frac, \
+                                                         random_state=RANDOM_SEED, verbose=0)
 
-        # Save experiment results at each iteration
-        with open(NX_RESULTS_DIR, 'wb') as f:
-            pickle.dump(nx_results, f, protocol=2)
+            # Save experiment results at each iteration
+            with open(NX_RESULTS_DIR, 'wb') as f:
+                pickle.dump(nx_results, f, protocol=2)
 
-        with open(TXT_NX_RESULTS_DIR, 'w+') as f:
-            f.write(json.dumps(nx_results))
+            with open(TXT_NX_RESULTS_DIR, 'w+') as f:
+                f.write(json.dumps(nx_results))
 
-# Save final experiment results
-with open(NX_RESULTS_DIR, 'wb') as f:
-    pickle.dump(nx_results, f, protocol=2)
+    # Save final experiment results
+    with open(NX_RESULTS_DIR, 'wb') as f:
+        pickle.dump(nx_results, f, protocol=2)
 
-with open(TXT_NX_RESULTS_DIR, 'w+') as f:
-    f.write(json.dumps(nx_results))
+    with open(TXT_NX_RESULTS_DIR, 'w+') as f:
+        f.write(json.dumps(nx_results))

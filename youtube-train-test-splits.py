@@ -8,12 +8,12 @@ RANDOM_SEED = 0
 
 youtube_adj = pickle.load(open('./youtube/youtube-adj.pkl', 'rb'))
 
-FRAC_EDGES_HIDDEN = [0.25, 0.5, 0.75]
+FRAC_EDGES_HIDDEN = [0.15, 0.3]
 TRAIN_TEST_SPLIT_DIR = './train-test-splits/'
 
 # Generate 1 train/test split for each frac_edges_hidden setting
 for frac_hidden in FRAC_EDGES_HIDDEN:
-    val_frac = 0.1
+    val_frac = 0.05
     test_frac = frac_hidden - val_frac
 
     # Set random seed
