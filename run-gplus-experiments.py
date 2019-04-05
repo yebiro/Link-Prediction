@@ -9,7 +9,7 @@ import tensorflow as tf
 # Runtime parameters
 NUM_REPEATS = 1
 RANDOM_SEED = 0
-FRAC_EDGES_HIDDEN = [0.15, 0.3]
+FRAC_EDGES_HIDDEN = [0.15]
 
 # Read in gplus network
 TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'

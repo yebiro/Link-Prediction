@@ -18,7 +18,7 @@ gplus_edges_dir = './gplus/gplus.txt'
 # Parse edgelist into directed graph
 # edges_f = open(gplus_edges_dir)
 with open(gplus_edges_dir, 'rb')as edges_f:
-    gplus_g = nx.read_edgelist(edges_f, nodetype=int, create_using=nx.DiGraph(), encoding='latin1')
+    gplus_g = nx.read_edgelist(edges_f, nodetype=int, create_using=nx.Graph(), encoding='latin1')
 print('Num. weakly connected components: ', nx.number_weakly_connected_components(gplus_g))
 
 # print('Saving adjacency matrix')

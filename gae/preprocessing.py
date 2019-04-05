@@ -258,11 +258,11 @@ def mask_test_edges_directed(adj, test_frac=.1, val_frac=.05,
             continue
 
         # If removing edge would disconnect the graph, backtrack and move on
-        g.remove_edge(node1, node2)
-        if prevent_disconnect == True:
-            if not nx.is_weakly_connected(g):
-                g.add_edge(node1, node2)
-                continue
+        # g.remove_edge(node1, node2)
+        # if prevent_disconnect == True:
+        #     if not nx.is_weakly_connected(g):
+        #         g.add_edge(node1, node2)
+        #         continue
 
         # Fill test_edges first
         if len(test_edges) < num_test:
