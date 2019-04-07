@@ -8,8 +8,8 @@ FB_EGO_USERS = [0, 107, 1684, 1912, 3437, 348, 3980, 414, 686, 698]
 
 # Store all ego graphs in pickle files as (adj, features) tuples
 for ego_user in FB_EGO_USERS:
-    edges_dir = './facebook/' + str(ego_user) + '.edges'
-    feats_dir = './facebook/' + str(ego_user) + '.allfeat'
+    edges_dir = './data/facebook/' + str(ego_user) + '.edges'
+    feats_dir = './data/facebook/' + str(ego_user) + '.allfeat'
     
     # Read edge-list
     #f = open(edges_dir)
@@ -47,5 +47,5 @@ for ego_user in FB_EGO_USERS:
 
     # Save adj, features in pickle file
     network_tuple = (adj, features)
-    with open("fb-processed/{0}-adj-feat.pkl".format(ego_user), "wb") as f:
+    with open("data/fb-processed/{0}-adj-feat.pkl".format(ego_user), "wb") as f:
         pickle.dump(network_tuple, f)

@@ -12,7 +12,7 @@ import scipy.sparse as sp
 
 pathhack = os.path.dirname(os.path.realpath(__file__))
 
-feat_file_name = "%s/facebook/feature_map.txt" % (pathhack,)
+feat_file_name = "%s/data/facebook/feature_map.txt" % (pathhack,)
 feature_index = {}  #numeric index to name
 inverted_feature_index = {} #name to numeric index
 network = nx.Graph()
@@ -30,7 +30,7 @@ def load_features():
     if not os.path.exists(feat_file_name):
         feat_index = {}
         # build the index from facebook/*.featnames files
-        featname_files = glob.iglob("%s/facebook/*.featnames" % (pathhack,))
+        featname_files = glob.iglob("%s/data/facebook/*.featnames" % (pathhack,))
         for featname_file_name in featname_files:
             featname_file = open(featname_file_name, 'r')
             for line in featname_file:
@@ -67,15 +67,15 @@ def load_nodes():
     global ego_nodes
 
     # get all the node ids by looking at the files
-    ego_nodes = [int(x.split("\\")[-1].split('.')[0]) for x in glob.glob("%s/facebook/*.featnames" % (pathhack,))]
+    ego_nodes = [int(x.split("\\")[-1].split('.')[0]) for x in glob.glob("%s/data/facebook/*.featnames" % (pathhack,))]
     node_ids = ego_nodes
 
     # parse each node
     for node_id in node_ids:
-        featname_file = open("%s/facebook/%d.featnames" % (pathhack,node_id), 'r')
-        feat_file     = open("%s/facebook/%d.feat"      % (pathhack,node_id), 'r')
-        egofeat_file  = open("%s/facebook/%d.egofeat"   % (pathhack,node_id), 'r')
-        edge_file     = open("%s/facebook/%d.edges"     % (pathhack,node_id), 'r')
+        featname_file = open("%s/data/facebook/%d.featnames" % (pathhack,node_id), 'r')
+        feat_file     = open("%s/data/facebook/%d.feat"      % (pathhack,node_id), 'r')
+        egofeat_file  = open("%s/data/facebook/%d.egofeat"   % (pathhack,node_id), 'r')
+        edge_file     = open("%s/data/facebook/%d.edges"     % (pathhack,node_id), 'r')
 
         # 0 1 0 0 0 ...
         ego_features = [int(x) for x in egofeat_file.readline().split(' ')]
@@ -122,7 +122,7 @@ def load_nodes():
 def load_edges():
     global network
     assert network.order() > 0, "call load_nodes() first"
-    edge_file = open("%s/facebook/facebook_combined.txt" % (pathhack,),"r")
+    edge_file = open("%s/data/facebook/facebook_combined.txt" % (pathhack,),"r")
     for line in edge_file:
         # nodefrom nodeto
         split = [int(x) for x in line.split(" ")]
@@ -185,7 +185,7 @@ if __name__ == '__main__':
     features = feature_matrix()
     network_tuple = (adj, sp.csr_matrix(features))
 
-    with open("fb-processed/combined-adj-sparsefeat.pkl", "wb") as f:
+    with open("data/fb-processed/combined-adj-sparsefeat.pkl", "wb") as f:
         pickle.dump(network_tuple, f)
 
     print("Network saved!")

@@ -16,13 +16,13 @@ fb_graphs = {} # Dictionary to store all FB ego network graphs
 
 # Read in each FB Ego graph
 	# Store graphs in dictionary as (adj, features) tuples
-# for user in FB_EGO_USERS:
-#     network_dir = './fb-processed/{0}-adj-feat.pkl'.format(user)
-#     with open(network_dir, 'rb') as f:
-#         adj, features = pickle.load(f)
-#
-#     # Store in dict
-#     fb_graphs[user] = (adj, features)
+for user in FB_EGO_USERS:
+    network_dir = './fb-processed/{0}-adj-feat.pkl'.format(user)
+    with open(network_dir, 'rb') as f:
+        adj, features = pickle.load(f)
+
+    # Store in dict
+    fb_graphs[user] = (adj, features)
     
 # Read in combined FB graph
 combined_dir = './fb-processed/combined-adj-sparsefeat.pkl'
@@ -46,11 +46,11 @@ nx_graphs = {}
 
 # Larger graphs
 N_LARGE = 2000
-nx_graphs['er-large'] = nx.erdos_renyi_graph(n=N_LARGE, p=.03, seed=RANDOM_SEED) # Erdos-Renyi
+#nx_graphs['er-large'] = nx.erdos_renyi_graph(n=N_LARGE, p=.03, seed=RANDOM_SEED) # Erdos-Renyi
 nx_graphs['ws-large'] = nx.watts_strogatz_graph(n=N_LARGE, k=11, p=.1, seed=RANDOM_SEED) # Watts-Strogatz
-nx_graphs['ba-large'] = nx.barabasi_albert_graph(n=N_LARGE, m=6, seed=RANDOM_SEED) # Barabasi-Albert
-nx_graphs['pc-large'] = nx.powerlaw_cluster_graph(n=N_LARGE, m=6, p=.02, seed=RANDOM_SEED) # Powerlaw Cluster
-nx_graphs['sbm-large'] = nx.random_partition_graph(sizes=[N_LARGE//10]*10, p_in=.05, p_out=.005, seed=RANDOM_SEED) # Stochastic Block Model
+#nx_graphs['ba-large'] = nx.barabasi_albert_graph(n=N_LARGE, m=6, seed=RANDOM_SEED) # Barabasi-Albert
+#nx_graphs['pc-large'] = nx.powerlaw_cluster_graph(n=N_LARGE, m=6, p=.02, seed=RANDOM_SEED) # Powerlaw Cluster
+#nx_graphs['sbm-large'] = nx.random_partition_graph(sizes=[N_LARGE//10]*10, p_in=.05, p_out=.005, seed=RANDOM_SEED) # Stochastic Block Model
 
 # Remove isolates from random graphs
 for g_name, nx_g in nx_graphs.items():
