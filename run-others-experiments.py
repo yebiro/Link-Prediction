@@ -13,8 +13,8 @@ RANDOM_SEED = 0
 FRAC_EDGES_HIDDEN = [0.15]
 TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'
 
-#NetWorks=['twitter', 'gplus', 'hamster', 'advogato']
-NetWorks=['gplus']
+NetWorks=['twitter', 'gplus', 'hamster', 'advogato']
+#NetWorks=['gplus']
 for network in NetWorks:
 
     network_dir = './data/{}/{}-adj.pkl'.format(network, network)

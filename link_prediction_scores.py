@@ -654,91 +654,91 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
         print("------------------------------------------------------")
 
 
-    ### ---------- LINK PREDICTION BASELINES ---------- ###
-    # Adamic-Adar
-    aa_scores = adamic_adar_scores(g_train, train_test_split)
-    lp_scores['aa'] = aa_scores
-    if verbose >= 1:
-        print('')
-        print('Adamic-Adar Test ROC score: ', str(aa_scores['test_roc']))
-        print('Adamic-Adar Test AP score: ', str(aa_scores['test_ap']))
-
-    # Jaccard Coefficient
-    jc_scores = jaccard_coefficient_scores(g_train, train_test_split)
-    lp_scores['jc'] = jc_scores
-    if verbose >= 1:
-        print('')
-        print('Jaccard Coefficient Test ROC score: ', str(jc_scores['test_roc']))
-        print('Jaccard Coefficient Test AP score: ', str(jc_scores['test_ap']))
-
-    # Preferential Attachment
-    pa_scores = preferential_attachment_scores(g_train, train_test_split)
-    lp_scores['pa'] = pa_scores
-    if verbose >= 1:
-        print('')
-        print('Preferential Attachment Test ROC score: ', str(pa_scores['test_roc']))
-        print('Preferential Attachment Test AP score: ', str(pa_scores['test_ap']))
-
-
-    ### ---------- SPECTRAL CLUSTERING ---------- ###
-    sc_scores = spectral_clustering_scores(train_test_split)
-    lp_scores['sc'] = sc_scores
-    if verbose >= 1:
-        print('')
-        print('Spectral Clustering Validation ROC score: ', str(sc_scores['val_roc']))
-        print('Spectral Clustering Validation AP score: ', str(sc_scores['val_ap']))
-        print('Spectral Clustering Test ROC score: ', str(sc_scores['test_roc']))
-        print('Spectral Clustering Test AP score: ', str(sc_scores['test_ap']))
-        print('')
-
-    ## ---------- NODE2VEC ---------- ###
-    # node2vec settings
-    # NOTE: When p = q = 1, this is equivalent to DeepWalk
-    P = 1 # Return hyperparameter
-    Q = 1 # In-out hyperparameter
-    WINDOW_SIZE = 10 # Context size for optimization
-    NUM_WALKS = 10 # Number of walks per source
-    WALK_LENGTH = 80 # Length of walk per source
-    DIMENSIONS = 128 # Embedding dimension
-    DIRECTED = False # Graph directed/undirected
-    WORKERS = 8 # Num. parallel workers
-    ITER = 1 # SGD epochs
-
-    # Using bootstrapped edge embeddings + logistic regression
-    n2v_edge_emb_scores = node2vec_scores(g_train, train_test_split,
-        P, Q, WINDOW_SIZE, NUM_WALKS, WALK_LENGTH, DIMENSIONS, DIRECTED, WORKERS, ITER,
-        "edge-emb",
-        verbose)
-    lp_scores['n2v_edge_emb'] = n2v_edge_emb_scores
-
-    if verbose >= 1:
-        print('')
-        print('node2vec (Edge Embeddings) Validation ROC score: ', str(n2v_edge_emb_scores['val_roc']))
-        print('node2vec (Edge Embeddings) Validation AP score: ', str(n2v_edge_emb_scores['val_ap']))
-        print('node2vec (Edge Embeddings) Test ROC score: ', str(n2v_edge_emb_scores['test_roc']))
-        print('node2vec (Edge Embeddings) Test AP score: ', str(n2v_edge_emb_scores['test_ap']))
-        print('')
-
-    # Using dot products to calculate edge scores
-    n2v_dot_prod_scores = node2vec_scores(g_train, train_test_split,
-        P, Q, WINDOW_SIZE, NUM_WALKS, WALK_LENGTH, DIMENSIONS, DIRECTED, WORKERS, ITER,
-        "dot-product",
-        verbose)
-    lp_scores['n2v_dot_prod'] = n2v_dot_prod_scores
-
-    if verbose >= 1:
-        print('')
-        print('node2vec (Dot Product) Validation ROC score: ', str(n2v_dot_prod_scores['val_roc']))
-        print('node2vec (Dot Product) Validation AP score: ', str(n2v_dot_prod_scores['val_ap']))
-        print('node2vec (Dot Product) Test ROC score: ', str(n2v_dot_prod_scores['test_roc']))
-        print('node2vec (Dot Product) Test AP score: ', str(n2v_dot_prod_scores['test_ap']))
-        print('')
+    ## ---------- LINK PREDICTION BASELINES ---------- ###
+    # # Adamic-Adar
+    # aa_scores = adamic_adar_scores(g_train, train_test_split)
+    # lp_scores['aa'] = aa_scores
+    # if verbose >= 1:
+    #     print('')
+    #     print('Adamic-Adar Test ROC score: ', str(aa_scores['test_roc']))
+    #     print('Adamic-Adar Test AP score: ', str(aa_scores['test_ap']))
+    #
+    # # Jaccard Coefficient
+    # jc_scores = jaccard_coefficient_scores(g_train, train_test_split)
+    # lp_scores['jc'] = jc_scores
+    # if verbose >= 1:
+    #     print('')
+    #     print('Jaccard Coefficient Test ROC score: ', str(jc_scores['test_roc']))
+    #     print('Jaccard Coefficient Test AP score: ', str(jc_scores['test_ap']))
+    #
+    # # Preferential Attachment
+    # pa_scores = preferential_attachment_scores(g_train, train_test_split)
+    # lp_scores['pa'] = pa_scores
+    # if verbose >= 1:
+    #     print('')
+    #     print('Preferential Attachment Test ROC score: ', str(pa_scores['test_roc']))
+    #     print('Preferential Attachment Test AP score: ', str(pa_scores['test_ap']))
+    #
+    #
+    # ### ---------- SPECTRAL CLUSTERING ---------- ###
+    # sc_scores = spectral_clustering_scores(train_test_split)
+    # lp_scores['sc'] = sc_scores
+    # if verbose >= 1:
+    #     print('')
+    #     print('Spectral Clustering Validation ROC score: ', str(sc_scores['val_roc']))
+    #     print('Spectral Clustering Validation AP score: ', str(sc_scores['val_ap']))
+    #     print('Spectral Clustering Test ROC score: ', str(sc_scores['test_roc']))
+    #     print('Spectral Clustering Test AP score: ', str(sc_scores['test_ap']))
+    #     print('')
+    #
+    # ## ---------- NODE2VEC ---------- ###
+    # # node2vec settings
+    # # NOTE: When p = q = 1, this is equivalent to DeepWalk
+    # P = 1 # Return hyperparameter
+    # Q = 1 # In-out hyperparameter
+    # WINDOW_SIZE = 10 # Context size for optimization
+    # NUM_WALKS = 10 # Number of walks per source
+    # WALK_LENGTH = 80 # Length of walk per source
+    # DIMENSIONS = 128 # Embedding dimension
+    # DIRECTED = False # Graph directed/undirected
+    # WORKERS = 8 # Num. parallel workers
+    # ITER = 1 # SGD epochs
+    #
+    # # Using bootstrapped edge embeddings + logistic regression
+    # n2v_edge_emb_scores = node2vec_scores(g_train, train_test_split,
+    #     P, Q, WINDOW_SIZE, NUM_WALKS, WALK_LENGTH, DIMENSIONS, DIRECTED, WORKERS, ITER,
+    #     "edge-emb",
+    #     verbose)
+    # lp_scores['n2v_edge_emb'] = n2v_edge_emb_scores
+    #
+    # if verbose >= 1:
+    #     print('')
+    #     print('node2vec (Edge Embeddings) Validation ROC score: ', str(n2v_edge_emb_scores['val_roc']))
+    #     print('node2vec (Edge Embeddings) Validation AP score: ', str(n2v_edge_emb_scores['val_ap']))
+    #     print('node2vec (Edge Embeddings) Test ROC score: ', str(n2v_edge_emb_scores['test_roc']))
+    #     print('node2vec (Edge Embeddings) Test AP score: ', str(n2v_edge_emb_scores['test_ap']))
+    #     print('')
+    #
+    # # Using dot products to calculate edge scores
+    # n2v_dot_prod_scores = node2vec_scores(g_train, train_test_split,
+    #     P, Q, WINDOW_SIZE, NUM_WALKS, WALK_LENGTH, DIMENSIONS, DIRECTED, WORKERS, ITER,
+    #     "dot-product",
+    #     verbose)
+    # lp_scores['n2v_dot_prod'] = n2v_dot_prod_scores
+    #
+    # if verbose >= 1:
+    #     print('')
+    #     print('node2vec (Dot Product) Validation ROC score: ', str(n2v_dot_prod_scores['val_roc']))
+    #     print('node2vec (Dot Product) Validation AP score: ', str(n2v_dot_prod_scores['val_ap']))
+    #     print('node2vec (Dot Product) Test ROC score: ', str(n2v_dot_prod_scores['test_roc']))
+    #     print('node2vec (Dot Product) Test AP score: ', str(n2v_dot_prod_scores['test_ap']))
+    #     print('')
 
 
     ### ---------- (VARIATIONAL) GRAPH AUTOENCODER ---------- ###
     # GAE hyperparameters
     LEARNING_RATE = 0.01  # Default: 0.01
-    EPOCHS = 250
+    EPOCHS = 100
     HIDDEN1_DIM = 32
     HIDDEN2_DIM = 16
     DROPOUT = 0

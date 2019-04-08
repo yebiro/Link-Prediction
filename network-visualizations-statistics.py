@@ -14,7 +14,7 @@ from math import log
 
 
 def save_visualization(g, file_name, title):
-    plt.figure(figsize=(18, 12))
+    plt.figure(figsize=(12, 9))
     degrees = dict(nx.degree(g))
 
     # Draw networkx graph -- scale node size by log(degree+1)
@@ -148,18 +148,18 @@ def random_networks():
     nx_graphs = {}
 
     # Small graphs
-    N_SMALL = 200
-    nx_graphs['er-small'] = nx.erdos_renyi_graph(n=N_SMALL, p=.03, seed=RANDOM_SEED)  # Erdos-Renyi
-    nx_graphs['ws-small'] = nx.watts_strogatz_graph(n=N_SMALL, k=11, p=.1, seed=RANDOM_SEED)  # Watts-Strogatz
-    nx_graphs['ba-small'] = nx.barabasi_albert_graph(n=N_SMALL, m=6, seed=RANDOM_SEED)  # Barabasi-Albert
-    nx_graphs['pc-small'] = nx.powerlaw_cluster_graph(n=N_SMALL, m=6, p=.02, seed=RANDOM_SEED)  # Powerlaw Cluster
-    nx_graphs['sbm-small'] = nx.random_partition_graph(sizes=[N_SMALL // 10] * 10, p_in=.1, p_out=.01,
-                                                       seed=RANDOM_SEED)  # Stochastic Block Model
+    # N_SMALL = 200
+    # nx_graphs['er-small'] = nx.erdos_renyi_graph(n=N_SMALL, p=.03, seed=RANDOM_SEED)  # Erdos-Renyi
+    # nx_graphs['ws-small'] = nx.watts_strogatz_graph(n=N_SMALL, k=11, p=.1, seed=RANDOM_SEED)  # Watts-Strogatz
+    # nx_graphs['ba-small'] = nx.barabasi_albert_graph(n=N_SMALL, m=6, seed=RANDOM_SEED)  # Barabasi-Albert
+    # nx_graphs['pc-small'] = nx.powerlaw_cluster_graph(n=N_SMALL, m=6, p=.02, seed=RANDOM_SEED)  # Powerlaw Cluster
+    # nx_graphs['sbm-small'] = nx.random_partition_graph(sizes=[N_SMALL // 10] * 10, p_in=.1, p_out=.01,
+    #                                                    seed=RANDOM_SEED)  # Stochastic Block Model
 
     # Larger graphs
-    N_LARGE = 1000
-    nx_graphs['er-large'] = nx.erdos_renyi_graph(n=N_LARGE, p=.03, seed=RANDOM_SEED)  # Erdos-Renyi
-    nx_graphs['ws-large'] = nx.watts_strogatz_graph(n=N_LARGE, k=11, p=.1, seed=RANDOM_SEED)  # Watts-Strogatz
+    N_LARGE = 2000
+    # nx_graphs['er-large'] = nx.erdos_renyi_graph(n=N_LARGE, p=.03, seed=RANDOM_SEED)  # Erdos-Renyi
+    # nx_graphs['ws-large'] = nx.watts_strogatz_graph(n=N_LARGE, k=11, p=.1, seed=RANDOM_SEED)  # Watts-Strogatz
     nx_graphs['ba-large'] = nx.barabasi_albert_graph(n=N_LARGE, m=6, seed=RANDOM_SEED)  # Barabasi-Albert
     nx_graphs['pc-large'] = nx.powerlaw_cluster_graph(n=N_LARGE, m=6, p=.02, seed=RANDOM_SEED)  # Powerlaw Cluster
     nx_graphs['sbm-large'] = nx.random_partition_graph(sizes=[N_LARGE // 10] * 10, p_in=.05, p_out=.005,
@@ -182,24 +182,9 @@ def random_networks():
         title = "Random NetworkX Graph: " + name
 
         save_visualization(g, visualization_file_name, title)
-        save_network_statistics(g, statistics_file_name_pkl)
-        save_network_statistics_json(g, statistics_file_name_json)
+        #save_network_statistics(g, statistics_file_name_pkl)
+        #save_network_statistics_json(g, statistics_file_name_json)
 
 #facebook_networks()
 #other_social_networks()
-#random_networks()
-
- # Combined FB network
-    combined_dir = './data/fb-processed/combined-adj-sparsefeat.pkl'
-    with open(combined_dir, 'rb') as f:
-        adj, features = pickle.load(f)
-        G = nx.Graph(adj)
-
-        visualization_file_name = './visualizations/fb-combined-visualization.png'
-        statistics_file_name_pkl = './network-statistics/fb-combined-statistics.pkl'
-        statistics_file_name_json = './network-statistics/fb-combined-statistics.json'
-        title = 'Facebook Ego Networks: Combined'
-
-        save_visualization(G, visualization_file_name, title)
-        save_network_statistics(G, statistics_file_name_pkl)
-        save_network_statistics_json(G, statistics_file_name_json)
+random_networks()

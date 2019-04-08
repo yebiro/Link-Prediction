@@ -12,13 +12,13 @@ fb_graphs = {} # Dictionary to store all FB ego network graphs
 
 # Read in each FB Ego graph
 	# Store graphs in dictionary as (adj, features) tuples
-# for user in FB_EGO_USERS:
-#     network_dir = './data/fb-processed/{0}-adj-feat.pkl'.format(user)
-#     with open(network_dir, 'rb') as f:
-#         adj, features = pickle.load(f)
-#
-#     # Store in dict
-#     fb_graphs[user] = (adj, features)
+for user in FB_EGO_USERS:
+    network_dir = './data/fb-processed/{0}-adj-feat.pkl'.format(user)
+    with open(network_dir, 'rb') as f:
+        adj, features = pickle.load(f)
+
+    # Store in dict
+    fb_graphs[user] = (adj, features)
     
 # Read in combined FB graph
 combined_dir = './data/fb-processed/combined-adj-sparsefeat.pkl'
@@ -28,7 +28,7 @@ with open(combined_dir, 'rb') as f:
 
 
 ### ---------- Generate Train-Test Splits ---------- ###
-FRAC_EDGES_HIDDEN = [0.15, 0.3, 0.45]
+FRAC_EDGES_HIDDEN = [0.15]
 TRAIN_TEST_SPLITS_FOLDER = './train-test-splits/'
 
 # TODO = ['fb-combined-0.75-hidden']

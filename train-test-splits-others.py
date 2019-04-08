@@ -5,8 +5,8 @@ import numpy as np
 from gae.preprocessing import mask_test_edges_directed, mask_test_edges
 
 RANDOM_SEED = 0
-#NetWorks=['twitter', 'gplus', 'hamster', 'advogato']
-NetWorks=['gplus']
+NetWorks=['twitter', 'gplus', 'hamster', 'advogato']
+#NetWorks=['twitter', 'gplus']
 for network in NetWorks:
     network_adj = pickle.load(open('./data/{}/{}-adj.pkl'.format(network, network), 'rb'))
 

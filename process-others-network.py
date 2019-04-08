@@ -11,8 +11,8 @@ from math import log
 ##################################
 ######### READ EDGE LIST #########
 ##################################
-#NetWorks=['twitter', 'gplus', 'hamster', 'advogato']
-NetWorks=['gplus']
+NetWorks=['twitter', 'gplus', 'hamster', 'advogato']
+#NetWorks=['gplus']
 
 for network in NetWorks:
     # Read edge-list
