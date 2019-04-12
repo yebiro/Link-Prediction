@@ -363,7 +363,7 @@ def gae_scores(
     if verbose >= 1:
         print('GAE preprocessing...')
 
-    start_time = time.time()
+    # start_time = time.time()
 
     # Train on CPU (hide GPU) due to memory constraints
     os.environ['CUDA_VISIBLE_DEVICES'] = ""
@@ -458,6 +458,7 @@ def gae_scores(
     if verbose >= 1:
         print('Starting GAE training!')
 
+    start_time = time.time()
     # Train model
     for epoch in range(EPOCHS):
 
@@ -506,7 +507,7 @@ def gae_scores(
         #       "train_acc=", "{:.5f}".format(avg_accuracy), "val_roc=", "{:.5f}".format(val_roc_score[-1]),
         #       "val_ap=", "{:.5f}".format(ap_curr),
         #       "time=", "{:.5f}".format(time.time() - t)))
-
+    runtime = time.time() - start_time
     if verbose == 2:
         print("Optimization Finished!")
 
@@ -518,7 +519,7 @@ def gae_scores(
     if edge_score_mode == "dot-product":
         gae_score_matrix = np.dot(gae_emb, gae_emb.T)
 
-        runtime = time.time() - start_time
+        # runtime = time.time() - start_time
 
         # Calculate final scores
         gae_val_roc, gae_val_ap = get_roc_score(val_edges, val_edges_false, gae_score_matrix)
@@ -570,7 +571,7 @@ def gae_scores(
             val_preds = edge_classifier.predict_proba(val_edge_embs)[:, 1]
         test_preds = edge_classifier.predict_proba(test_edge_embs)[:, 1]
 
-        runtime = time.time() - start_time
+        #runtime = time.time() - start_time
 
         # Calculate scores
         if len(val_edges) > 0 and len(val_edges_false) > 0:

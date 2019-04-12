@@ -108,7 +108,8 @@ def facebook_networks():
 
 #other social networks
 def other_social_networks():
-    NetWorks = ['twitter', 'gplus', 'hamster', 'advogato']
+   # NetWorks = ['twitter', 'gplus', 'hamster', 'advogato']
+    NetWorks = ['hamster']
     for network in NetWorks:
         # Read edge-list
         print('')
@@ -135,7 +136,7 @@ def other_social_networks():
             visualization_file_name = './visualizations/{0}-visualization.png'.format(network)
             statistics_file_name_pkl = './network-statistics/{0}-statistics.pkl'.format(network)
             statistics_file_name_json = './network-statistics/{0}-statistics.json'.format(network)
-            save_visualization(network_g, visualization_file_name, '{} Network'.format(network))
+            #save_visualization(network_g, visualization_file_name, '{} Network'.format(network))
             save_network_statistics(network_g, statistics_file_name_pkl)
             save_network_statistics_json(network_g, statistics_file_name_json)
 
@@ -186,5 +187,5 @@ def random_networks():
         #save_network_statistics_json(g, statistics_file_name_json)
 
 #facebook_networks()
-#other_social_networks()
-random_networks()
+other_social_networks()
+#random_networks()
