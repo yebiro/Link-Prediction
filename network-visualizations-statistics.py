@@ -109,7 +109,7 @@ def facebook_networks():
 #other social networks
 def other_social_networks():
    # NetWorks = ['twitter', 'gplus', 'hamster', 'advogato']
-    NetWorks = ['hamster']
+    NetWorks = ['twitter']
     for network in NetWorks:
         # Read edge-list
         print('')

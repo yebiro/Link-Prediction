@@ -1,7 +1,6 @@
 # Combine all ego networks (including node features) and store in (adj, features) tuple
 # Adapted from: https://github.com/jcatw/snap-facebook
 
-#!/usr/bin/env python
 import networkx as nx
 import numpy as np
 import glob

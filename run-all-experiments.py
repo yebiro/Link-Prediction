@@ -27,9 +27,9 @@ def facebook_networks():
 
     # Read in combined FB graph
     combined_dir = './data/fb-processed/combined-adj-sparsefeat.pkl'
-    with open(combined_dir, 'rb') as f:
-        adj, features = pickle.load(f)
-        fb_graphs['combined'] = (adj, features)
+    # with open(combined_dir, 'rb') as f:
+    #     adj, features = pickle.load(f)
+    #     fb_graphs['combined'] = (adj, features)
 
     ### ---------- Run Link Prediction Tests ---------- ###
     for i in range(NUM_REPEATS):
@@ -97,8 +97,8 @@ def facebook_networks():
         with open(FB_RESULTS_DIR, 'wb') as f:
             pickle.dump(fb_results, f, protocol=2)
 
-        with open(TXT_FB_RESULTS_DIR, 'w') as f:
-            json.dump(fb_results, f, indent=4)
+        # with open(TXT_FB_RESULTS_DIR, 'w') as f:
+        #     json.dump(fb_results, f, indent=4)
 
 
 def random_networks():
@@ -115,7 +115,7 @@ def random_networks():
     # nx_graphs['sbm-small'] = nx.random_partition_graph(sizes=[N_SMALL//10]*10, p_in=.1, p_out=.01, seed=RANDOM_SEED) # Stochastic Block Model
 
     # Larger graphs
-    NUM=[12, 100, 1000, 10000, 100000]
+    NUM=[12, 100, 1000, 10000]
     for N_LARGE in NUM:
         # N_LARGE = 1000
         # nx_graphs['er-large'] = nx.erdos_renyi_graph(n=N_LARGE, p=.03, seed=RANDOM_SEED) # Erdos-Renyi
@@ -187,7 +187,7 @@ def random_networks():
             with open(TXT_NX_RESULTS_DIR, 'w+') as f:
                 json.dump(nx_results, f, indent=4)
 
-#facebook_networks()
-random_networks()
+facebook_networks()
+#random_networks()
 
 

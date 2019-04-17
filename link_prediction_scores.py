@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.sparse as sp
 import numpy as np
-from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve
+from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve, precision_recall_curve
 from sklearn.manifold import spectral_embedding
 import node2vec
 from gensim.models import Word2Vec
@@ -18,13 +18,46 @@ from gae.preprocessing import preprocess_graph, construct_feed_dict, sparse_to_t
 import pickle
 from copy import deepcopy
 
+#sigmod激活函数
 def sigmoid(x):
     if x>=0:
         return 1 / (1 + np.exp(-x))
     else:
         return 1 / (1 + np.exp(x))
 
+#绘制训练损失和准确度以及验证AUC值和AP值曲线
+def draw_gae_training(dataset, epochs, train_loss, train_acc, val_roc, val_ap):
+    # plot the training loss and accuracy
 
+    _, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    ax1.plot(np.arange(0, epochs), train_loss, label="train_loss")
+    ax2.plot(np.arange(0, epochs), train_acc, label="train_accuracy", color='r')
+
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('train loss')
+    ax2.set_ylabel('train accuracy')
+    plt.legend(['train_loss', 'train_accuracy'], loc="center right")
+    plt.savefig("results/tables/{}_loss_accuracy.png".format(dataset))
+    plt.show()
+
+
+
+    plt.plot(np.arange(0, epochs), val_roc, label="val_auc")
+    plt.xlabel("Epoch")
+    plt.ylabel("Area under Curve")
+    plt.legend(loc="center right")
+    plt.savefig("results/tables/{}_val_roc.png".format(dataset))
+    plt.show()
+
+
+    plt.plot(np.arange(0, epochs), val_ap, label="val_ap")
+    # plt.title("Training Loss and Accuracy on sar classifier")
+    plt.xlabel("Epoch")
+    plt.ylabel("Average Accuracy")
+    plt.legend(loc="center right")
+    plt.savefig("results/tables/{}_val_ap.png".format(dataset))
+    plt.show()
 
 # Input: positive test/val edges, negative test/val edges, edge score matrix
 # Output: ROC AUC score, ROC Curve (FPR, TPR, Thresholds), AP score
@@ -304,6 +337,7 @@ def node2vec_scores(
         
         n2v_test_roc = roc_auc_score(test_edge_labels, test_preds)
         # n2v_test_roc_curve = roc_curve(test_edge_labels, test_preds)
+        n2v_test_pr_curve = precision_recall_curve(test_edge_labels, test_preds)
         n2v_test_ap = average_precision_score(test_edge_labels, test_preds)
 
 
@@ -331,6 +365,7 @@ def node2vec_scores(
 
     n2v_scores['test_roc'] = n2v_test_roc
     # n2v_scores['test_roc_curve'] = n2v_test_roc_curve
+    # n2v_scores['test_pr_curve'] = n2v_test_pr_curve
     n2v_scores['test_ap'] = n2v_test_ap
 
     n2v_scores['val_roc'] = n2v_val_roc
@@ -460,6 +495,10 @@ def gae_scores(
 
     start_time = time.time()
     # Train model
+    train_loss = []
+    train_acc = []
+    val_roc = []
+    val_ap = []
     for epoch in range(EPOCHS):
 
         t = time.time()
@@ -507,6 +546,13 @@ def gae_scores(
         #       "train_acc=", "{:.5f}".format(avg_accuracy), "val_roc=", "{:.5f}".format(val_roc_score[-1]),
         #       "val_ap=", "{:.5f}".format(ap_curr),
         #       "time=", "{:.5f}".format(time.time() - t)))
+
+        train_loss.append(avg_cost)
+        train_acc.append(avg_accuracy)
+        val_roc.append(val_roc_score[-1])
+        val_ap.append(ap_curr)
+
+    #draw_gae_training('hamster', EPOCHS, train_loss, train_acc, val_roc, val_ap)
     runtime = time.time() - start_time
     if verbose == 2:
         print("Optimization Finished!")
@@ -585,6 +631,7 @@ def gae_scores(
         
         gae_test_roc = roc_auc_score(test_edge_labels, test_preds)
         gae_test_roc_curve = roc_curve(test_edge_labels, test_preds)
+        gae_test_pr_curve = precision_recall_curve(test_edge_labels, test_preds)
         gae_test_ap = average_precision_score(test_edge_labels, test_preds)
 
     # Record scores
@@ -599,6 +646,7 @@ def gae_scores(
     if(edge_score_mode=="edge-emb"):
         gae_scores['test_roc_curve'] = gae_test_roc_curve
         gae_scores['val_roc_curve'] = gae_val_roc_curve
+        gae_scores['test_pr_curve'] = gae_test_pr_curve
 
     gae_scores['val_roc_per_epoch'] = val_roc_score
     gae_scores['runtime'] = runtime
@@ -655,7 +703,7 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
         print("------------------------------------------------------")
 
 
-    ## ---------- LINK PREDICTION BASELINES ---------- ###
+    # ---------- LINK PREDICTION BASELINES ---------- ###
     # # Adamic-Adar
     # aa_scores = adamic_adar_scores(g_train, train_test_split)
     # lp_scores['aa'] = aa_scores
@@ -737,49 +785,49 @@ def calculate_all_scores(adj_sparse, features_matrix=None, directed=False, \
 
 
     ### ---------- (VARIATIONAL) GRAPH AUTOENCODER ---------- ###
-    # GAE hyperparameters
+    # # GAE hyperparameters
     LEARNING_RATE = 0.01  # Default: 0.01
-    EPOCHS = 100
+    EPOCHS = 250
     HIDDEN1_DIM = 32
     HIDDEN2_DIM = 16
     DROPOUT = 0
 
-    # Use dot product
-    tf.set_random_seed(random_state)  # Consistent GAE training
-    gae_results = gae_scores(adj_sparse, train_test_split, features_matrix,
-                             LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
-                             "dot-product",
-                             verbose,
-                             dtype=tf.float32)
-    lp_scores['gae'] = gae_results
-
-    if verbose >= 1:
-        print('')
-        print('GAE (Dot Product) Validation ROC score: ', str(gae_results['val_roc']))
-        print('GAE (Dot Product) Validation AP score: ', str(gae_results['val_ap']))
-        print('GAE (Dot Product) Test ROC score: ', str(gae_results['test_roc']))
-        print('GAE (Dot Product) Test AP score: ', str(gae_results['test_ap']))
-        print("------------------------------------------------------")
-        print("------------------------------------------------------")
-        print('')
-
-    #
-    # # Use edge embeddings
-    # tf.set_random_seed(random_state) # Consistent GAE training
-    # gae_edge_emb_results = gae_scores(adj_sparse, train_test_split, features_matrix,
-    #     LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
-    #     "edge-emb",
-    #     verbose)
-    # lp_scores['gae_edge_emb'] = gae_edge_emb_results
+    # # Use dot product
+    # tf.set_random_seed(random_state)  # Consistent GAE training
+    # gae_results = gae_scores(adj_sparse, train_test_split, features_matrix,
+    #                          LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
+    #                          "dot-product",
+    #                          verbose,
+    #                          dtype=tf.float32)
+    # lp_scores['gae'] = gae_results
     #
     # if verbose >= 1:
     #     print('')
-    #     print('GAE (Edge Embeddings) Validation ROC score: ', str(gae_edge_emb_results['val_roc']))
-    #     print('GAE (Edge Embeddings) Validation AP score: ', str(gae_edge_emb_results['val_ap']))
-    #     #print('GAE (Edge Embeddings) Validation ROC_CURVE score: ', str(gae_edge_emb_results['val_roc_curve']))
-    #     print('GAE (Edge Embeddings) Test ROC score: ', str(gae_edge_emb_results['test_roc']))
-    #     print('GAE (Edge Embeddings) Test AP score: ', str(gae_edge_emb_results['test_ap']))
-    #     #print('GAE (Edge Embeddings) Test ROC_CURVE score: ', str(gae_edge_emb_results['test_roc_curve']))
+    #     print('GAE (Dot Product) Validation ROC score: ', str(gae_results['val_roc']))
+    #     print('GAE (Dot Product) Validation AP score: ', str(gae_results['val_ap']))
+    #     print('GAE (Dot Product) Test ROC score: ', str(gae_results['test_roc']))
+    #     print('GAE (Dot Product) Test AP score: ', str(gae_results['test_ap']))
+    #     print("------------------------------------------------------")
+    #     print("------------------------------------------------------")
+    #     print('')
+
+
+    # Use edge embeddings
+    tf.set_random_seed(random_state) # Consistent GAE training
+    gae_edge_emb_results = gae_scores(adj_sparse, train_test_split, features_matrix,
+        LEARNING_RATE, EPOCHS, HIDDEN1_DIM, HIDDEN2_DIM, DROPOUT,
+        "edge-emb",
+        verbose)
+    lp_scores['gae_edge_emb'] = gae_edge_emb_results
+
+    if verbose >= 1:
+        print('')
+        print('GAE (Edge Embeddings) Validation ROC score: ', str(gae_edge_emb_results['val_roc']))
+        print('GAE (Edge Embeddings) Validation AP score: ', str(gae_edge_emb_results['val_ap']))
+        #print('GAE (Edge Embeddings) Validation ROC_CURVE score: ', str(gae_edge_emb_results['val_roc_curve']))
+        print('GAE (Edge Embeddings) Test ROC score: ', str(gae_edge_emb_results['test_roc']))
+        print('GAE (Edge Embeddings) Test AP score: ', str(gae_edge_emb_results['test_ap']))
+        #print('GAE (Edge Embeddings) Test ROC_CURVE score: ', str(gae_edge_emb_results['test_roc_curve']))
 
 
     ### ---------- RETURN RESULTS ---------- ###
